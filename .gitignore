@@ -1,0 +1,9 @@
+# Ignore Binaries and Intermediate folders
+Binaries/
+Intermediate/
+DerivedDataCache/
+Saved/
+.vs/
+.vscode/
+*.sln
+*.vcxproj*
