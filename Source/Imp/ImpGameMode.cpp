@@ -10,13 +10,15 @@ AImpGameMode::AImpGameMode() {
     PrimaryActorTick.bCanEverTick = true;
 }
 
+
 void AImpGameMode::PostLogin(APlayerController* NewPlayer) {
     Super::PostLogin(NewPlayer);
-
+    /*
     if (NewPlayer) {
         APawn* NewPawn = GetWorld()->SpawnActor<AImpCharacter>(DefaultPawnClass, FVector::ZeroVector, FRotator::ZeroRotator);
         if (NewPawn) {
             NewPlayer->Possess(NewPawn);
         }
     }
+    */
 }

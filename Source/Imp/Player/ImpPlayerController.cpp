@@ -35,23 +35,19 @@ void AImpPlayerController::SetupInputComponent() {
     }
 }
 
-void AImpPlayerController::Move(const FInputActionValue& Value) {
-    UE_LOG(LogTemplateController, Log, TEXT("Move function called on controller!"));
-    
+void AImpPlayerController::Move(const FInputActionValue& Value) {  
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
     if (ImpCharacter) {
-        ImpCharacter->S_Move(Value.Get<FVector2D>());
+        ImpCharacter->Move(Value.Get<FVector2D>());
     } else {
         UE_LOG(LogTemplateController, Error, TEXT("Move function: No character found"));
     }
 }
 
-void AImpPlayerController::Look(const FInputActionValue& Value) {
-    UE_LOG(LogTemplateController, Log, TEXT("Look function called on controller!"));
-    
+void AImpPlayerController::Look(const FInputActionValue& Value) {    
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
     if (ImpCharacter) {
-        ImpCharacter->S_Look(Value.Get<FVector2D>());
+        ImpCharacter->Look(Value.Get<FVector2D>());
     } else {
         UE_LOG(LogTemplateController, Error, TEXT("Look function: No character found"));
     }
@@ -59,22 +55,18 @@ void AImpPlayerController::Look(const FInputActionValue& Value) {
 }
 
 void AImpPlayerController::Jump() {
-    UE_LOG(LogTemplateController, Log, TEXT("Jump function called on controller!"));
-    
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
     if (ImpCharacter) {
-        ImpCharacter->S_Jump();
+        ImpCharacter->Jump();
     } else {
         UE_LOG(LogTemplateController, Error, TEXT("Jump function: No character found"));
     }
 }
 
-void AImpPlayerController::StopJumping() {
-    UE_LOG(LogTemplateController, Log, TEXT("StopJumping function called on controller!"));
-    
+void AImpPlayerController::StopJumping() {  
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
     if (ImpCharacter) {
-        ImpCharacter->S_StopJumping();
+        ImpCharacter->StopJumping();
     } else {
         UE_LOG(LogTemplateController, Error, TEXT("StopJumping function: No character found"));
     }

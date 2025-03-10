@@ -31,7 +31,6 @@ private:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* FollowCamera;
-
     
 protected:
     UPROPERTY(Replicated)
@@ -40,21 +39,27 @@ protected:
 public:
     float GetHealth() const { return Health; }
     
- public:
+public:
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
     
-    UFUNCTION(Server, Reliable)
-    void S_Move(const FVector2D& InputValue);
+public:
+    void Move(const FVector2D& InputValue);
+    void Look(const FVector2D& InputValue);
+    void Jump();
+    void StopJump();
+    
+    UFUNCTION(Server, Reliable, WithValidation)
+    void ServerMoveChar(const FVector2D& InputValue);
+    void ServerMoveChar_Implementation(const FVector2D& InputValue);
+    bool ServerMoveChar_Validate(const FVector2D& InputValue);
     
     UFUNCTION(Server, Reliable)
-    void S_Look(const FVector2D& InputValue);
+    void ServerLook(const FVector2D& InputValue);
     
     UFUNCTION(Server, Reliable)
-    void S_Jump();
+    void ServerJump();
     
     UFUNCTION(Server, Reliable)
-    void S_StopJumping();
-    
-    friend class AImpPlayerController;
+    void ServerStopJump();
 };
