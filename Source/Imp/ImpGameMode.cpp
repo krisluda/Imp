@@ -4,7 +4,5 @@
 #include "UObject/ConstructorHelpers.h"
 
 AImpGameMode::AImpGameMode() {
-    DefaultPawnClass = AImpCharacter::StaticClass();
-
     PlayerControllerClass = AImpPlayerController::StaticClass();
 }
