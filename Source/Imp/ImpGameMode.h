@@ -10,4 +10,6 @@ class AImpGameMode : public AGameModeBase {
 
 public:
     AImpGameMode();
+
+    virtual void PostLogin(APlayerController* NewPlayer) override;
 };

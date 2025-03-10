@@ -3,7 +3,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Net/UnrealNetwork.h" //Gpt says this is needed for replication
+#include "Net/UnrealNetwork.h" 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -38,8 +38,6 @@ AImpCharacter::AImpCharacter() {
     GetCharacterMovement()->BrakingDecelerationWalking = 2000.0f;
     GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
-    //A derived blueprint of this is created, where skeletal mesh and anim blueprint will be set, according to Epic, to avoid 
-    //direct content references in C++
 }
 
 void AImpCharacter::BeginPlay() {
@@ -50,7 +48,7 @@ void AImpCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
-void AImpCharacter::Move(const FVector2D& InputValue) {
+void AImpCharacter::S_Move_Implementation(const FVector2D& InputValue) {
     if (Controller != nullptr) {
         const FRotator Rotation = Controller->GetControlRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -63,18 +61,18 @@ void AImpCharacter::Move(const FVector2D& InputValue) {
     }
 }
 
-void AImpCharacter::Look(const FVector2D& InputValue) {
+void AImpCharacter::S_Look_Implementation(const FVector2D& InputValue) {
     if (Controller != nullptr) {
         AddControllerYawInput(InputValue.X);
         AddControllerPitchInput(InputValue.Y);    
     }
 }
 
-void AImpCharacter::Jump() {
+void AImpCharacter::S_Jump_Implementation() {
     Super::Jump();
 }
 
-void AImpCharacter::StopJumping() {
+void AImpCharacter::S_StopJumping_Implementation() {
     Super::StopJumping();
 }
 

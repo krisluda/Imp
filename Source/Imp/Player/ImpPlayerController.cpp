@@ -40,7 +40,7 @@ void AImpPlayerController::Move(const FInputActionValue& Value) {
     
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
     if (ImpCharacter) {
-        ImpCharacter->Move(Value.Get<FVector2D>());
+        ImpCharacter->S_Move(Value.Get<FVector2D>());
     } else {
         UE_LOG(LogTemplateController, Error, TEXT("Move function: No character found"));
     }
@@ -51,7 +51,7 @@ void AImpPlayerController::Look(const FInputActionValue& Value) {
     
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
     if (ImpCharacter) {
-        ImpCharacter->Look(Value.Get<FVector2D>());
+        ImpCharacter->S_Look(Value.Get<FVector2D>());
     } else {
         UE_LOG(LogTemplateController, Error, TEXT("Look function: No character found"));
     }
@@ -63,7 +63,7 @@ void AImpPlayerController::Jump() {
     
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
     if (ImpCharacter) {
-        ImpCharacter->Jump();
+        ImpCharacter->S_Jump();
     } else {
         UE_LOG(LogTemplateController, Error, TEXT("Jump function: No character found"));
     }
@@ -74,7 +74,7 @@ void AImpPlayerController::StopJumping() {
     
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
     if (ImpCharacter) {
-        ImpCharacter->StopJumping();
+        ImpCharacter->S_StopJumping();
     } else {
         UE_LOG(LogTemplateController, Error, TEXT("StopJumping function: No character found"));
     }
