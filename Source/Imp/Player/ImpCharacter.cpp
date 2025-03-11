@@ -51,91 +51,31 @@ void AImpCharacter::Tick(float DeltaTime) {
 }
 
 void AImpCharacter::Move(const FVector2D& InputValue) {
-    if (!HasAuthority()) {
-        UE_LOG(LogTemp, Warning, TEXT("Client: Attempting to move character"));
-    }
-    
-    if (Controller == nullptr) {
-        UE_LOG(LogTemp, Warning, TEXT("Client: Character has no controller"));
-        return;
-    }
-
-
-
-    if (HasAuthority()) {
-        if (Controller != nullptr) {
-            const FRotator Rotation = Controller->GetControlRotation();
-            const FRotator YawRotation(0, Rotation.Yaw, 0);
-        
-            const FVector ForwardDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-            const FVector RightDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-        
-            AddMovementInput(ForwardDir, InputValue.Y);
-            AddMovementInput(RightDir, InputValue.X);
-        }
-        
-    } else {
-        ServerMoveChar(InputValue);
-    }
-}
-
-void AImpCharacter::ServerMoveChar_Implementation(const FVector2D& InputValue) {
-    UE_LOG(LogTemp, Warning, TEXT("Server: Executing movement for client"));
     if (Controller != nullptr) {
-        UE_LOG(LogTemp, Warning, TEXT("Server: Controller is not null"));
         const FRotator Rotation = Controller->GetControlRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
     
         const FVector ForwardDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
         const FVector RightDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-    
+        
         AddMovementInput(ForwardDir, InputValue.Y);
         AddMovementInput(RightDir, InputValue.X);
     }
 }
 
-bool AImpCharacter::ServerMoveChar_Validate(const FVector2D& InputValue) {
-    return true;
-}
-
 void AImpCharacter::Look(const FVector2D& InputValue) {
-    if (HasAuthority()) {
-        if (Controller != nullptr) {
+    if (Controller != nullptr) {
         AddControllerYawInput(InputValue.X);
-            AddControllerPitchInput(InputValue.Y);    
-        } 
-    } else {
-        ServerLook(InputValue);
+        AddControllerPitchInput(InputValue.Y);    
     }
-
-}
-
-void AImpCharacter::ServerLook_Implementation(const FVector2D& InputValue) {
-    Look(InputValue);
 }
 
 void AImpCharacter::Jump() {
-    if (HasAuthority()) {
-        Super::Jump();
-    } else {
-        ServerJump();
-    }
-}
-
-void AImpCharacter::ServerJump_Implementation() {
     Super::Jump();
 }
 
-void AImpCharacter::StopJump() {
-    if (HasAuthority()) {
-        StopJumping();
-    } else {
-        ServerStopJump();
-    }
-}
-
-void AImpCharacter::ServerStopJump_Implementation() {
-    StopJumping();
+void AImpCharacter::StopJumping() {
+    Super::StopJumping();
 }
 
 void AImpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

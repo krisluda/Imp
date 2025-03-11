@@ -47,8 +47,9 @@ public:
     void Move(const FVector2D& InputValue);
     void Look(const FVector2D& InputValue);
     void Jump();
-    void StopJump();
+    void StopJumping();
     
+    /*
     UFUNCTION(Server, Reliable, WithValidation)
     void ServerMoveChar(const FVector2D& InputValue);
     void ServerMoveChar_Implementation(const FVector2D& InputValue);
@@ -62,4 +63,5 @@ public:
     
     UFUNCTION(Server, Reliable)
     void ServerStopJump();
+    */
 };
