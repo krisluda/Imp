@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 func build() {
@@ -21,6 +22,16 @@ func generateProjectFiles() {
 	config := getConfig()
 
 	runCommand(config.UnrealDir+"\\Engine\\Binaries\\DotNET\\UnrealBuildTool\\UnrealBuildTool.exe", "-projectfiles", "-project="+config.ProjectDir+"\\Imp.uproject", "-game", "-rocket", "-progress")
+}
+
+func clean() {
+	config := getConfig()
+
+	os.RemoveAll(config.ProjectDir + "\\Binaries")
+	os.RemoveAll(config.ProjectDir + "\\Build")
+	os.RemoveAll(config.ProjectDir + "\\Saved")
+	os.RemoveAll(config.ProjectDir + "\\Intermediate")
+	os.RemoveAll(config.ProjectDir + "\\DerivedDataCache")
 }
 
 func runListenServer(runConfig RunConfig) {
@@ -54,8 +65,22 @@ func runListenServer(runConfig RunConfig) {
 		go func() {
 			defer wg.Done()
 
-			runCommand(config.UnrealDir+"\\Engine\\Binaries\\Win64\\UnrealEditor.exe", config.ProjectDir+"\\Imp.uproject", level, "-game", "-log=Player"+strconv.Itoa(playerNum)+".log", "-windowed", "-winx="+fmt.Sprint(xPos), "-winy="+fmt.Sprint(yPos), "-resx=800", "-resy=450", "-nosplash", "-ini:Engine:[OnlineSubsystem]:DefaultPlatformService=null", "-ExecCmds=t.MaxFPS 30, Stat FPS", "-ExecCmds=open "+runConfig.Level)
+			batfile := ""
+			batfile += "\"" + config.UnrealDir + "\\Engine\\Binaries\\Win64\\UnrealEditor.exe\" "
+			batfile += "\"" + config.ProjectDir + "\\Imp.uproject\" "
+			batfile += level + " "
+			batfile += "-game "
+			batfile += "-log=Player" + strconv.Itoa(playerNum) + ".log "
+			batfile += "-windowed -winx=" + fmt.Sprint(xPos) + " -winy=" + fmt.Sprint(yPos) + " -resx=800" + " -resy=450 "
+			batfile += "-nosplash "
+			batfile += "-ini:Engine:[OnlineSubsystem]:DefaultPlatformService=null "
+			batfile += "-ExecCmds=\"t.MaxFPS 30, Stat FPS\""
+
+			os.WriteFile("tmp.bat", []byte(batfile), 0644)
+			runCommand("tmp.bat")
 		}()
+
+		time.Sleep(3 * 1_000_000_000)
 	}
 
 	wg.Wait()
@@ -77,8 +102,22 @@ func runStandalone(runConfig RunConfig) {
 		go func() {
 			defer wg.Done()
 
-			runCommand(config.UnrealDir+"\\Engine\\Binaries\\Win64\\UnrealEditor.exe", config.ProjectDir+"\\Imp.uproject", runConfig.Level+"?name=Player"+strconv.Itoa(playerNum), "-game", "-log=Player"+strconv.Itoa(playerNum)+".log", "-windowed", "-winx="+fmt.Sprint(xPos), "-winy="+fmt.Sprint(yPos), "-resx=800", "-resy=450", "-nosplash", "-ini:Engine:[OnlineSubsystem]:DefaultPlatformService=null", "-ExecCmds=t.MaxFPS 30, Stat FPS", "-ExecCmds=open "+runConfig.Level)
+			batfile := ""
+			batfile += "\"" + config.UnrealDir + "\\Engine\\Binaries\\Win64\\UnrealEditor.exe\" "
+			batfile += config.ProjectDir + "\\Imp.uproject "
+			batfile += runConfig.Level + "?name=Player" + strconv.Itoa(playerNum) + " "
+			batfile += "-game "
+			batfile += "-log=Player" + strconv.Itoa(playerNum) + ".log "
+			batfile += "-windowed -winx=" + fmt.Sprint(xPos) + " -winy=" + fmt.Sprint(yPos) + " -resx=800" + " -resy=450 "
+			batfile += "-nosplash "
+			batfile += "-ini:Engine:[OnlineSubsystem]:DefaultPlatformService=null "
+			batfile += "-ExecCmds=\"t.MaxFPS 30, Stat FPS\""
+
+			os.WriteFile("tmp.bat", []byte(batfile), 0644)
+			runCommand("tmp.bat")
 		}()
+
+		time.Sleep(3 * 1_000_000_000)
 	}
 
 	wg.Wait()

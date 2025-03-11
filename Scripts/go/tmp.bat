@@ -1,0 +1,1 @@
+"c:\PROGRA~1\EPICGA~1\UE_5.5\Engine\Binaries\Win64\UnrealEditor.exe" "d:\UE5 Prosjekter\ImpRepo\Imp\Imp.uproject" 127.0.0.1:7777?name=Player2 -game -log=Player2.log -windowed -winx=10 -winy=530 -resx=800 -resy=450 -nosplash -ini:Engine:[OnlineSubsystem]:DefaultPlatformService=null -ExecCmds="t.MaxFPS 30, Stat FPS"

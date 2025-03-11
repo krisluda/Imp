@@ -7,3 +7,4 @@ Saved/
 .vscode/
 *.sln
 *.vcxproj*
+.ignore

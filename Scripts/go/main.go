@@ -18,6 +18,8 @@ func main() {
 		build()
 	case "gpf":
 		generateProjectFiles()
+	case "clean":
+		clean()
 	case "rls":
 		if len(os.Args) < 4 {
 			fmt.Println("Usage: go run . rls /Game/<level> <numplayers> <gamemode-without-leading-A>")
