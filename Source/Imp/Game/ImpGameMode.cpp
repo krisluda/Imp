@@ -9,6 +9,7 @@ AImpGameMode::AImpGameMode() {
     PlayerControllerClass = AImpPlayerController::StaticClass();
 
     PrimaryActorTick.bCanEverTick = true;
+    bUseSeamlessTravel = true;
 }
 
 void AImpGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) {
