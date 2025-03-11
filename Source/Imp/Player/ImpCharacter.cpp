@@ -3,13 +3,12 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Log.h"
 #include "Net/UnrealNetwork.h" 
-
-DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AImpCharacter::AImpCharacter() {
     PrimaryActorTick.bCanEverTick = true;
-
+    
     bReplicates = true;
     bAlwaysRelevant = true;
 
@@ -82,4 +81,8 @@ void AImpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
     DOREPLIFETIME(AImpCharacter, Health);
+}
+
+void AImpCharacter::DebugDestroyCharacter() {
+    Destroy();
 }

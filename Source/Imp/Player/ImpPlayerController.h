@@ -9,8 +9,6 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogTemplateController, Log, All);
-
 UCLASS ()
 class IMP_API AImpPlayerController : public APlayerController {
     GENERATED_BODY()

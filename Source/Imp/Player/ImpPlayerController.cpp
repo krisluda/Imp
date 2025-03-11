@@ -5,9 +5,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "InputActionValue.h"
+#include "Log.h"
 #include "GameFramework/Character.h"
-
-DEFINE_LOG_CATEGORY(LogTemplateController);
 
 AImpPlayerController::AImpPlayerController() {
     InputMapping = LoadObject<UInputMappingContext>(nullptr, TEXT("/Game/Imp/Core/Player/Input/IMC_Imp.IMC_Imp"));
@@ -35,39 +34,25 @@ void AImpPlayerController::SetupInputComponent() {
     }
 }
 
+//Add if-tests to see if characters exist, and add other logic for when the character isnt.
 void AImpPlayerController::Move(const FInputActionValue& Value) {  
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
-    if (ImpCharacter) {
-        ImpCharacter->Move(Value.Get<FVector2D>());
-    } else {
-        UE_LOG(LogTemplateController, Error, TEXT("Move function: No character found"));
-    }
+    ImpCharacter->Move(Value.Get<FVector2D>());
 }
 
 void AImpPlayerController::Look(const FInputActionValue& Value) {    
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
-    if (ImpCharacter) {
-        ImpCharacter->Look(Value.Get<FVector2D>());
-    } else {
-        UE_LOG(LogTemplateController, Error, TEXT("Look function: No character found"));
-    }
-    
+    ImpCharacter->Look(Value.Get<FVector2D>());
+    AddYawInput(Value.Get<FVector2D>().X);
+    AddPitchInput(Value.Get<FVector2D>().Y);
 }
 
 void AImpPlayerController::Jump() {
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
-    if (ImpCharacter) {
-        ImpCharacter->Jump();
-    } else {
-        UE_LOG(LogTemplateController, Error, TEXT("Jump function: No character found"));
-    }
+    ImpCharacter->Jump();
 }
 
 void AImpPlayerController::StopJumping() {  
     AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
-    if (ImpCharacter) {
-        ImpCharacter->StopJumping();
-    } else {
-        UE_LOG(LogTemplateController, Error, TEXT("StopJumping function: No character found"));
-    }
+    ImpCharacter->StopJumping();
 }

@@ -11,5 +11,10 @@ class AImpGameMode : public AGameModeBase {
 public:
     AImpGameMode();
 
-    virtual void PostLogin(APlayerController* NewPlayer) override;
+    void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+    void StartPlay() override;
+    void BeginPlay() override;
+    void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    void PostLogin(APlayerController* NewPlayer) override;
+    void Logout(AController* Exiting) override;
 };

@@ -2,13 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Logging/LogMacros.h"
 #include "ImpCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
-
-DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS()
 class IMP_API AImpCharacter : public ACharacter {
@@ -16,52 +13,25 @@ class IMP_API AImpCharacter : public ACharacter {
 
 public:
     AImpCharacter();
+    
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-protected:
     virtual void BeginPlay() override;
-
-public: 
     virtual void Tick(float DeltaTime) override;
     //virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; 
 
-private: 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
     class USpringArmComponent* CameraBoom;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* FollowCamera;
     
-protected:
     UPROPERTY(Replicated)
     float Health;
+    //Health is on character, but what is on player state?
     
-public:
-    float GetHealth() const { return Health; }
-    
-public:
-    FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-    FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-    
-public:
     void Move(const FVector2D& InputValue);
     void Look(const FVector2D& InputValue);
     void Jump();
     void StopJumping();
-    
-    /*
-    UFUNCTION(Server, Reliable, WithValidation)
-    void ServerMoveChar(const FVector2D& InputValue);
-    void ServerMoveChar_Implementation(const FVector2D& InputValue);
-    bool ServerMoveChar_Validate(const FVector2D& InputValue);
-    
-    UFUNCTION(Server, Reliable)
-    void ServerLook(const FVector2D& InputValue);
-    
-    UFUNCTION(Server, Reliable)
-    void ServerJump();
-    
-    UFUNCTION(Server, Reliable)
-    void ServerStopJump();
-    */
+    void DebugDestroyCharacter();
 };

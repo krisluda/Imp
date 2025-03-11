@@ -20,6 +20,7 @@ public class Imp : ModuleRules {
 			ModuleDirectory,
 			Path.Combine(ModuleDirectory, "Player"),
 			Path.Combine(ModuleDirectory, "Game"),
+			Path.Combine(ModuleDirectory, "Global"),
 		});
 	}
 }
