@@ -3,7 +3,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "AbilitySystemcomponent.h"
+#include "ImpAbilitySystemComponent.h"
 #include "GameplayEffect.h"
 #include "Log.h"
 #include "Net/UnrealNetwork.h" 
@@ -14,7 +14,7 @@ AImpCharacter::AImpCharacter() {
     bReplicates = true;
     bAlwaysRelevant = true;
 
-    AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+    ImpAbilitySystemComponent = CreateDefaultSubobject<UImpAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
     GetCharacterMovement()->SetIsReplicated(true);
 
@@ -61,8 +61,8 @@ void AImpCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
-UAbilitySystemComponent* AImpCharacter::GetAbilitySystemComponent() const {
-    return AbilitySystemComponent;
+UImpAbilitySystemComponent* AImpCharacter::GetAbilitySystemComponent() const {
+    return ImpAbilitySystemComponent;
 }
 
 void AImpCharacter::Move(const FVector2D& InputValue) {
@@ -91,10 +91,7 @@ void AImpCharacter::StopJumping() {
 
 void AImpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    
-    DOREPLIFETIME(AImpCharacter, Health);
 }
-
 
 void AImpCharacter::DebugDestroyCharacter() {
     Destroy();
