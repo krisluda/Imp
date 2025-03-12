@@ -16,11 +16,9 @@ class IMP_API AImpPlayerController : public APlayerController {
 public:
     AImpPlayerController();
     
-protected:
     virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;
     
-private:
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
     void Jump();

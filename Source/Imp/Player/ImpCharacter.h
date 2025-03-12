@@ -2,13 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
+#include "AbilitySystemComponent.h"
 #include "ImpCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 
 UCLASS()
-class IMP_API AImpCharacter : public ACharacter {
+class IMP_API AImpCharacter : public ACharacter, public IAbilitySystemInterface {
     GENERATED_BODY()
 
 public:
@@ -25,6 +27,11 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* FollowCamera;
     
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+    TObjectPtr<class UAbilitySystemComponent> AbilitySystemComponent;
+
+    virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
     UPROPERTY(Replicated)
     float Health;
     //Health is on character, but what is on player state?

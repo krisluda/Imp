@@ -36,13 +36,14 @@ void AImpPlayerController::SetupInputComponent() {
 
 //Add if-tests to see if characters exist, and add other logic for when the character isnt.
 void AImpPlayerController::Move(const FInputActionValue& Value) {  
-    AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
-    ImpCharacter->Move(Value.Get<FVector2D>());
+    if (AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn())) {
+        ImpCharacter->Move(Value.Get<FVector2D>());
+    }
 }
 
 void AImpPlayerController::Look(const FInputActionValue& Value) {    
-    AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
-    ImpCharacter->Look(Value.Get<FVector2D>());
+    //AImpCharacter* ImpCharacter = Cast<AImpCharacter>(GetPawn());
+    //ImpCharacter->Look(Value.Get<FVector2D>());
     AddYawInput(Value.Get<FVector2D>().X);
     AddPitchInput(Value.Get<FVector2D>().Y);
 }

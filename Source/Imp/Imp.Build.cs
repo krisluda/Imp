@@ -7,7 +7,19 @@ public class Imp : ModuleRules {
 	public Imp(ReadOnlyTargetRules Target) : base(Target) {
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "OnlineSubsystem", "OnlineSubsystemEOS", "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core", 
+			"CoreUObject", 
+			"Engine", 
+			"InputCore", 
+			"EnhancedInput", 
+			"UMG", 
+			"OnlineSubsystem", 
+			"OnlineSubsystemEOS", 
+			"Niagara", 
+			"GameplayAbilities", 
+			"GameplayTags", 
+			"GameplayTasks" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
