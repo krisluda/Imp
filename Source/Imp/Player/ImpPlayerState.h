@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
+#include "ImpAbilitySystemComponent.h"
 #include "ImpPlayerState.generated.h"
 
 

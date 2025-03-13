@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "ImpAbilitySystemComponent.h"
 #include "ImpCharacter.generated.h"
 
 class USpringArmComponent;
