@@ -1,13 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
-#include "ImpAbilitySystemComponent.h"
+//#include "ImpAbilitySystemComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "ImpPlayerState.generated.h"
 
 
 class UImpAbilitySystemComponent;
+class UImpAttributeSet;
 
 /**
  * 
@@ -21,11 +22,17 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	//GAS
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+	UFUNCTION(BlueprintPure)
+	UImpAbilitySystemComponent* GetImpAbilitySystemComponent() const;
+	UImpAttributeSet* GetImpAttributeSet() const; 
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComponent;
 
-	virtual UImpAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	//GAS -- END
+	UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta  = (AllowPrivateAccess = true))
+	TObjectPtr<UImpAttributeSet> ImpAttributeSet;
+
+
 };

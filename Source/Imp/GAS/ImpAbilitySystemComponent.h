@@ -6,17 +6,13 @@
 #include "AbilitySystemComponent.h"
 #include "ImpAbilitySystemComponent.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class IMP_API UImpAbilitySystemComponent : public UAbilitySystemComponent
-{
+class IMP_API UImpAbilitySystemComponent : public UAbilitySystemComponent {
 	GENERATED_BODY()
 
-	public:
-	UImpAbilitySystemComponent();
+public:
 
-	virtual void BeginPlay() override;
-
+	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& AbilitiesToGrant);
+	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassivesToGrant);
+	void InitializeDefaultAttributes(const TSubclassOf<UGameplayEffect>& AttributeEffect);
 };

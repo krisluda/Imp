@@ -41,3 +41,7 @@ void AImpGameMode::Logout(AController* Exiting) {
     Super::Logout(Exiting);
     IMP_LOG("AImpGameMode::Logout: Exiting: %s", *Exiting->GetName());
 }
+
+UImpCharacterClassInfo *AImpGameMode::GetImpCharacterClassDefaultInfo() const {
+    return ClassDefaults;
+}

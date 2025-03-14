@@ -2,39 +2,46 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "AbilitySystemInterface.h"
-#include "ImpAbilitySystemComponent.h"
+#include "GameplayTagContainer.h"
 #include "ImpCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 class UImpAbilitySystemComponent;
+class UImpAttributeSet;
 
 UCLASS()
-class IMP_API AImpCharacter : public ACharacter, public IAbilitySystemInterface {
+class IMP_API AImpCharacter : public ACharacter {
     GENERATED_BODY()
-
-public:
-    AImpCharacter();
-    
-    
-    
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-    virtual void BeginPlay() override;
-    virtual void Tick(float DeltaTime) override;
-    //virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; 
     
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
     class USpringArmComponent* CameraBoom;
     
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* FollowCamera;
+
+public:
+    AImpCharacter();
     
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+    virtual void PossessedBy(AController* NewController) override;
+    virtual void OnRep_PlayerState() override;
+
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
+    
+
+    UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComponent;
     
-    //IAbilitySystemInterface
-    virtual UImpAbilitySystemComponent* GetAbilitySystemComponent() const override;
+    UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UImpAttributeSet> ImpAttributeSet;
+
+    UPROPERTY(EditAnywhere, Category = "Custom Values|Character Info")
+    FGameplayTag CharacterTag;
+    
+    void InitAbilityActorInfo();
+    void InitClassDefaults();
+
     
     void Move(const FVector2D& InputValue);
     void Look(const FVector2D& InputValue);

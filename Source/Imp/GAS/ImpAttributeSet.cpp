@@ -2,19 +2,28 @@
 
 
 #include "ImpAttributeSet.h"
+#include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
-
-UImpAttributeSet::UImpAttributeSet() {
-    Health.SetBaseValue(1000.0f);
-    Health.SetCurrentValue(1000.0f);
-}
-
-void UImpAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue) {
-    GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, Health, OldValue);
-}
 
 void UImpAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
     DOREPLIFETIME_CONDITION_NOTIFY(UImpAttributeSet, Health, COND_None, REPNOTIFY_Always);
+    DOREPLIFETIME_CONDITION_NOTIFY(UImpAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+}
+
+void UImpAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) {
+    Super::PostGameplayEffectExecute(Data);
+
+    if (Data.EvaluatedData.Attribute == GetHealthAttribute()) {
+        SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+    }
+}
+
+void UImpAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) {
+    GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, Health, OldHealth);
+}
+
+void UImpAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData &OldMaxHealth) {
+    GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, Health, OldMaxHealth);
 }
