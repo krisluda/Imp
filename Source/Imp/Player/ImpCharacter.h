@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
 #include "ImpCharacter.generated.h"
@@ -11,7 +12,7 @@ class UImpAbilitySystemComponent;
 class UImpAttributeSet;
 
 UCLASS()
-class IMP_API AImpCharacter : public ACharacter {
+class IMP_API AImpCharacter : public ACharacter, public IAbilitySystemInterface {
     GENERATED_BODY()
     
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -25,6 +26,8 @@ public:
     
     virtual void PossessedBy(AController* NewController) override;
     virtual void OnRep_PlayerState() override;
+
+    virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;

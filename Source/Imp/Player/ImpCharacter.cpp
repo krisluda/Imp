@@ -71,6 +71,10 @@ void AImpCharacter::OnRep_PlayerState() {
     InitAbilityActorInfo();
 }
 
+UAbilitySystemComponent *AImpCharacter::GetAbilitySystemComponent() const {
+    return ImpAbilitySystemComponent;
+}
+
 void AImpCharacter::BeginPlay() {
     Super::BeginPlay();
 }

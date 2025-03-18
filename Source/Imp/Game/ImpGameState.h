@@ -3,15 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
-#include "ImpGameStateBase.generated.h"
+#include "GameFramework/GameState.h"
+#include "ImpGameState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class IMP_API AImpGameStateBase : public AGameStateBase
-{
+class IMP_API AImpGameState : public AGameState {
 	GENERATED_BODY()
 	
 };
