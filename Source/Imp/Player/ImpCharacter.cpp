@@ -7,6 +7,7 @@
 #include "GameFramework/Controller.h"
 #include "ImpPlayerState.h"
 #include "ImpAbilitySystemComponent.h"
+#include "ImpAttributeSet.h"
 #include "ImpCharacterClassInfo.h"
 #include "ImpAbilitySystemLibrary.h"
 #include "GameplayEffect.h"
@@ -85,6 +86,7 @@ void AImpCharacter::InitAbilityActorInfo() {
 
         if (IsValid(ImpAbilitySystemComponent)) {
             ImpAbilitySystemComponent->InitAbilityActorInfo(ImpPlayerState, this);
+            BindCallbacksToDependencies();
 
             if (HasAuthority()) {
                 InitClassDefaults();
@@ -106,8 +108,29 @@ void AImpCharacter::InitClassDefaults() {
         }
 
     }
+}
 
+void AImpCharacter::BindCallbacksToDependencies() {
+    if (IsValid(ImpAbilitySystemComponent) && IsValid(ImpAttributeSet)) {
+        ImpAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ImpAttributeSet->GetHealthAttribute()).AddLambda(
+            [this] (const FOnAttributeChangeData& Data) {
+                OnHealthChanged(Data.NewValue, ImpAttributeSet->GetMaxHealth());
+            }
+        );
 
+        ImpAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ImpAttributeSet->GetManaAttribute()).AddLambda(
+            [this] (const FOnAttributeChangeData& Data) {
+                OnManaChanged(Data.NewValue, ImpAttributeSet->GetMaxMana());
+            }
+        );
+    }
+}
+
+void AImpCharacter::BroadcastInitialValues() {
+    if (IsValid(ImpAttributeSet)) {
+        OnHealthChanged(ImpAttributeSet->GetHealth(), ImpAttributeSet->GetMaxHealth());
+        OnManaChanged(ImpAttributeSet->GetMana(), ImpAttributeSet->GetMaxMana());
+    }
 }
 
 void AImpCharacter::Move(const FVector2D &InputValue)

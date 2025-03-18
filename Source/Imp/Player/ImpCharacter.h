@@ -29,6 +29,13 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
     
+    //**Uhr says these will be refactored later. I wonder if they should be on PlayerState at some point**//
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnHealthChanged(float CurrentHealth, float MaxHealth);
+    
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnManaChanged(float CurrentMana, float MaxMana);
+    //** End **//
 
     UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComponent;
@@ -41,7 +48,10 @@ public:
     
     void InitAbilityActorInfo();
     void InitClassDefaults();
+    void BindCallbacksToDependencies();
 
+    UFUNCTION(BlueprintCallable)
+    void BroadcastInitialValues();
     
     void Move(const FVector2D& InputValue);
     void Look(const FVector2D& InputValue);
