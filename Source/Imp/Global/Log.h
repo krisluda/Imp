@@ -7,3 +7,5 @@ DECLARE_LOG_CATEGORY_EXTERN(LogImpError, Log, All);
 
 #define IMP_LOG(Format, ...) UE_LOG(LogImp, Log, TEXT(Format), ##__VA_ARGS__)
 #define IMP_LOG_ERROR(Format, ...) UE_LOG(LogImpError, Error, TEXT(Format), ##__VA_ARGS__)
+
+#define IMP_DEBUGMSG(Color, Format, ...) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Color, FString::Printf(TEXT(Format), ##__VA_ARGS__))

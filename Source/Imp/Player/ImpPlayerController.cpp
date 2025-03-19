@@ -5,14 +5,29 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "InputActionValue.h"
+#include "ImpInventoryComponent.h"
 #include "Log.h"
+#include "Net/UnrealNetwork.h"
 #include "GameFramework/Character.h"
 
 AImpPlayerController::AImpPlayerController() {
+    bReplicates = true;
+
+    
     InputMapping = LoadObject<UInputMappingContext>(nullptr, TEXT("/Game/Imp/Core/Player/Input/IMC_Imp.IMC_Imp"));
     MoveAction = LoadObject<UInputAction>(nullptr, TEXT("/Game/Imp/Core/Player/Input/IA_Move.IA_Move"));
     LookAction = LoadObject<UInputAction>(nullptr, TEXT("/Game/Imp/Core/Player/Input/IA_Look.IA_Look"));
     JumpAction = LoadObject<UInputAction>(nullptr, TEXT("/Game/Imp/Core/Player/Input/IA_Jump.IA_Jump"));
+
+
+    ImpInventoryComponent = CreateDefaultSubobject<UImpInventoryComponent>("ImpInventoryComponent");
+    ImpInventoryComponent->SetIsReplicated(true);
+}
+
+void AImpPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const {
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AImpPlayerController, ImpInventoryComponent);
 }
 
 void AImpPlayerController::BeginPlay() {

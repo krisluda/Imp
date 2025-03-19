@@ -33,6 +33,7 @@ public class Imp : ModuleRules {
 			Path.Combine(ModuleDirectory, "Game"),
 			Path.Combine(ModuleDirectory, "GAS"),
 			Path.Combine(ModuleDirectory, "Global"),
+			Path.Combine(ModuleDirectory, "Inventory"),
 			Path.Combine(ModuleDirectory, "Player"),
 		});
 	}

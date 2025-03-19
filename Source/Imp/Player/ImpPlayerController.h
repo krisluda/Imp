@@ -8,6 +8,7 @@
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class UImpInventoryComponent;
 
 UCLASS ()
 class IMP_API AImpPlayerController : public APlayerController {
@@ -15,6 +16,8 @@ class IMP_API AImpPlayerController : public APlayerController {
         
 public:
     AImpPlayerController();
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     
     virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;
@@ -35,5 +38,8 @@ public:
     
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     UInputAction* JumpAction;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Replicated)
+    TObjectPtr<UImpInventoryComponent> ImpInventoryComponent;
     
 };
