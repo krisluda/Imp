@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/PlayerController.h"
 #include "Logging/LogMacros.h"
 #include "ImpPlayerController.generated.h"
@@ -11,11 +12,13 @@ struct FInputActionValue;
 class UImpInventoryComponent;
 
 UCLASS ()
-class IMP_API AImpPlayerController : public APlayerController {
+class IMP_API AImpPlayerController : public APlayerController, public IAbilitySystemInterface {
     GENERATED_BODY()
         
 public:
     AImpPlayerController();
+
+    virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     

@@ -1,10 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ImpInventoryComponent.h"
+#include "ImpAbilitySystemComponent.h"
 #include "ImpAbilitySystemLibrary.h"
 #include "ItemTypesToTables.h"
 #include "ImpPlayerController.h"
 #include "ImpPlayerState.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Log.h"
 #include "Net/UnrealNetwork.h"
 
@@ -51,18 +53,6 @@ void UImpInventoryComponent::AddItem(const FGameplayTag &ItemTag, int32 NumItems
 	PackageInventory(CachedInventory);
 }
 
-FMasterItemDefinition UImpInventoryComponent::GetItemDefinitionByTag(const FGameplayTag &ItemTag) const {
-    checkf(InventoryDefinitions, TEXT("UImpInventoryComponent:GetItemDefinitionByTag: No Definitions Inside Component %s"), *GetNameSafe(this));
-
-	for (const auto& Pair : InventoryDefinitions->TagsToTables) {
-		if (ItemTag.MatchesTag(Pair.Key)) {
-			return *UImpAbilitySystemLibrary::GetDataTableRowByTag<FMasterItemDefinition>(Pair.Value, ItemTag);
-		}
-	}
-
-	return FMasterItemDefinition();
-}
-
 void UImpInventoryComponent::ServerAddItem_Implementation(const FGameplayTag &ItemTag, int32 NumItems) {
 	AddItem(ItemTag, NumItems);
 }
@@ -102,5 +92,46 @@ void UImpInventoryComponent::ReconstructInventoryMap(const FPackagedInventory &I
 
 void UImpInventoryComponent::OnRep_CachedInventory() {
 	ReconstructInventoryMap(CachedInventory);
+}
+
+void UImpInventoryComponent::UseItem(const FGameplayTag &ItemTag, int32 NumItems) {
+	AActor* Owner = GetOwner();
+	if (!IsValid(Owner)) return;
+
+	if (!Owner->HasAuthority()) {
+		ServerUseItem(ItemTag, NumItems);
+		return;
+	}
+
+	const FMasterItemDefinition Item = GetItemDefinitionByTag(ItemTag);
+
+	if (UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Owner)) {
+		if (IsValid(Item.ConsumableProps.ItemEffectClass)) {
+			const FGameplayEffectContextHandle ContextHandle = OwnerASC->MakeEffectContext();
+			const FGameplayEffectSpecHandle SpecHandle = OwnerASC->MakeOutgoingSpec(Item.ConsumableProps.ItemEffectClass, Item.ConsumableProps.ItemEffectLevel, ContextHandle);
+			OwnerASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+
+		AddItem(ItemTag, -1);
+
+		IMP_DEBUGMSG(Magenta, "UImpInventoryComponent::UseItem: Player %s Server Item Used: %s,", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *Item.ItemTag.ToString());
+		IMP_LOG("UImpInventoryComponent::UseItem: Player %s Server Item Used: %s", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *Item.ItemTag.ToString());
+	}
+}
+
+void UImpInventoryComponent::ServerUseItem_Implementation(const FGameplayTag &ItemTag, int32 NumItems) {
+	UseItem(ItemTag, NumItems);
+}
+
+FMasterItemDefinition UImpInventoryComponent::GetItemDefinitionByTag(const FGameplayTag &ItemTag) const {
+    checkf(InventoryDefinitions, TEXT("UImpInventoryComponent:GetItemDefinitionByTag: No Definitions Inside Component %s"), *GetNameSafe(this));
+
+	for (const auto& Pair : InventoryDefinitions->TagsToTables) {
+		if (ItemTag.MatchesTag(Pair.Key)) {
+			return *UImpAbilitySystemLibrary::GetDataTableRowByTag<FMasterItemDefinition>(Pair.Value, ItemTag);
+		}
+	}
+
+	return FMasterItemDefinition();
 }
 

@@ -6,6 +6,7 @@
 #include "InputMappingContext.h"
 #include "InputActionValue.h"
 #include "ImpInventoryComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Log.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/Character.h"
@@ -22,6 +23,10 @@ AImpPlayerController::AImpPlayerController() {
 
     ImpInventoryComponent = CreateDefaultSubobject<UImpInventoryComponent>("ImpInventoryComponent");
     ImpInventoryComponent->SetIsReplicated(true);
+}
+
+UAbilitySystemComponent* AImpPlayerController::GetAbilitySystemComponent() const {
+    return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
 }
 
 void AImpPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const {

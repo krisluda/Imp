@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
-//#include "ImpAbilitySystemComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "ImpPlayerState.generated.h"
 

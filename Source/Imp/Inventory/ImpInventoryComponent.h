@@ -47,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
+	
+	UFUNCTION(BlueprintCallable)
+	void UseItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
 
 	UFUNCTION(BlueprintPure)
 	FMasterItemDefinition GetItemDefinitionByTag(const FGameplayTag& ItemTag) const;
@@ -62,6 +65,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(const FGameplayTag& ItemTag, int32 NumItems);
+
+	UFUNCTION(Server, Reliable)
+	void ServerUseItem(const FGameplayTag& ItemTag, int32 NumItems);
 
 	void PackageInventory(FPackagedInventory& OutInventory);
 	void ReconstructInventoryMap(const FPackagedInventory& Inventory);
