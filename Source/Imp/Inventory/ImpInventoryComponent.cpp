@@ -1,9 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Log.h"
 #include "ImpInventoryComponent.h"
+#include "ImpAbilitySystemLibrary.h"
+#include "ItemTypesToTables.h"
 #include "ImpPlayerController.h"
 #include "ImpPlayerState.h"
+#include "Log.h"
 #include "Net/UnrealNetwork.h"
 
 bool FPackagedInventory::NetSerialize(FArchive &Ar, UPackageMap *Map, bool &bOutSuccess) {
@@ -49,6 +51,17 @@ void UImpInventoryComponent::AddItem(const FGameplayTag &ItemTag, int32 NumItems
 	PackageInventory(CachedInventory);
 }
 
+FMasterItemDefinition UImpInventoryComponent::GetItemDefinitionByTag(const FGameplayTag &ItemTag) const {
+    checkf(InventoryDefinitions, TEXT("UImpInventoryComponent:GetItemDefinitionByTag: No Definitions Inside Component %s"), *GetNameSafe(this));
+
+	for (const auto& Pair : InventoryDefinitions->TagsToTables) {
+		if (ItemTag.MatchesTag(Pair.Key)) {
+			return *UImpAbilitySystemLibrary::GetDataTableRowByTag<FMasterItemDefinition>(Pair.Value, ItemTag);
+		}
+	}
+
+	return FMasterItemDefinition();
+}
 
 void UImpInventoryComponent::ServerAddItem_Implementation(const FGameplayTag &ItemTag, int32 NumItems) {
 	AddItem(ItemTag, NumItems);
