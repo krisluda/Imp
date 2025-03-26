@@ -22,16 +22,40 @@ public:
     
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-    /* Implement Inventory Interface */
-    virtual UInventoryComponent* GetInventoryComponent_Implementation() override;
-
-    UInventoryWidgetController* GetInventoryWidgetController();
-    void CreateInventoryWidget();
-
-    //This might have to be moved above widget controller stuff here and in cpp?
+    virtual void BeginPlay() override;
+    
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-    virtual void BeginPlay() override;
+/* INVENTORY SECTION */
+
+    /* Implement Inventory Interface */
+    virtual UInventoryComponent* GetInventoryComponent_Implementation() override;
+    
+    UInventoryWidgetController* GetInventoryWidgetController();
+    
+    UFUNCTION(BlueprintCallable)
+    void CreateInventoryWidget();
+    
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Replicated)
+    TObjectPtr<UInventoryComponent> InventoryComponent;
+    
+    UPROPERTY()
+    TObjectPtr<UInventoryWidgetController> InventoryWidgetController;
+    
+    UPROPERTY(EditDefaultsOnly, Category="Custom Values|Widgets")
+    TSubclassOf<UInventoryWidgetController> InventoryWidgetControllerClass;
+    
+    UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+    TObjectPtr<UImpWidget> InventoryWidget;
+    
+    UPROPERTY(EditDefaultsOnly, Category="Custom Values|Widgets")
+    TSubclassOf<UImpWidget> InventoryWidgetClass;
+
+/* INVENTORY SECTION END */
+    
+
+/* INPUT SECTION */
+
     virtual void SetupInputComponent() override;
     
     void Move(const FInputActionValue& Value);
@@ -51,18 +75,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     UInputAction* JumpAction;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Replicated)
-    TObjectPtr<UInventoryComponent> InventoryComponent;
+/* INPUT SECTION END */
 
-    UPROPERTY()
-    TObjectPtr<UInventoryWidgetController> InventoryWidgetController;
 
-    UPROPERTY(EditDefaultsOnly, Category="Custom Values|Widgets")
-    TSubclassOf<UInventoryWidgetController> InventoryWidgetControllerClass;
-    
-    UPROPERTY()
-    TObjectPtr<UImpWidget> InventoryWidget;
-
-    UPROPERTY(EditDefaultsOnly, Category="Custom Values|Widgets")
-    TSubclassOf<UImpWidget> InventoryWidgetClass;
 };

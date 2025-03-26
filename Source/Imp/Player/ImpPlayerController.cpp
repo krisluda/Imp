@@ -34,6 +34,19 @@ void AImpPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> 
     DOREPLIFETIME(AImpPlayerController, InventoryComponent);
 }
 
+void AImpPlayerController::BeginPlay() {
+    Super::BeginPlay();
+
+    if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())) {
+        Subsystem->AddMappingContext(InputMapping, 0);
+    }
+}
+
+UAbilitySystemComponent *AImpPlayerController::GetAbilitySystemComponent() const
+{
+    return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
+}
+
 UInventoryComponent *AImpPlayerController::GetInventoryComponent_Implementation() {
     return InventoryComponent;
 }
@@ -42,6 +55,7 @@ UInventoryWidgetController *AImpPlayerController::GetInventoryWidgetController()
     if (!IsValid(InventoryWidgetController)) {
         InventoryWidgetController = NewObject<UInventoryWidgetController>(this, InventoryWidgetControllerClass);
         InventoryWidgetController->SetOwningActor(this);
+        InventoryWidgetController->BindCallbacksToDependencies();
     }
 
     return InventoryWidgetController;
@@ -51,21 +65,8 @@ void AImpPlayerController::CreateInventoryWidget() {
     if (UUserWidget* Widget = CreateWidget<UImpWidget>(this, InventoryWidgetClass)) {
         InventoryWidget = Cast<UImpWidget>(Widget);
         InventoryWidget->SetWidgetController(GetInventoryWidgetController());
+        InventoryWidgetController->BroadcastInitialValues();
         InventoryWidget->AddToViewport();
-    }
-}
-
-UAbilitySystemComponent *AImpPlayerController::GetAbilitySystemComponent() const
-{
-    return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
-}
-
-
-void AImpPlayerController::BeginPlay() {
-    Super::BeginPlay();
-
-    if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())) {
-        Subsystem->AddMappingContext(InputMapping, 0);
     }
 }
 

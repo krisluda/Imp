@@ -5,7 +5,6 @@
 #include "InventoryComponent.h"
 #include "InventoryInterface.h"
 
-
 void UInventoryWidgetController::SetOwningActor(AActor * InOwner) {
     OwningActor = InOwner;
 }
@@ -40,10 +39,14 @@ void UInventoryWidgetController::BroadcastInventoryContents() {
     if (IsValid(OwningInventory)) {
         TMap<FGameplayTag, int32> LocalInventoryMap = OwningInventory->GetInventoryTagMap();
 
+        ScrollBoxResetDelegate.Broadcast();
+
         for (const auto& Pair : LocalInventoryMap) {
             FMasterItemDefinition Item = OwningInventory->GetItemDefinitionByTag(Pair.Key);
             Item.ItemQuantitiy = Pair.Value;
             InventoryItemDelegate.Broadcast(Item);
         }
+
+        InventoryBroadcastComplete.Broadcast();
     }
 }
