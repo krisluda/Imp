@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
 #include "ItemTypes.h"
-#include "ImpInventoryComponent.generated.h"
+#include "InventoryComponent.generated.h"
 
 class UItemTypesToTables;
 
@@ -34,14 +34,17 @@ struct TStructOpsTypeTraits<FPackagedInventory> : TStructOpsTypeTraitsBase2<FPac
 //has a NetSerialize-function or whatever. Uhr describes it as a worthwhile optimization, because the inventory replication
 //ends up sending a lot of info over the net to stay updated.
 
-
+/* This declaration must happen directly after the struct for FPackagedInventory*/
+DECLARE_MULTICAST_DELEGATE_OneParam(FInventoryPackagedSignature, const FPackagedInventory& /*InventoryContents*/);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class IMP_API UImpInventoryComponent : public UActorComponent {
+class IMP_API UInventoryComponent : public UActorComponent {
 	GENERATED_BODY()
 
 public:	
-	UImpInventoryComponent();
+	UInventoryComponent();
+
+	FInventoryPackagedSignature InventoryPackagedDelegate;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -53,6 +56,8 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	FMasterItemDefinition GetItemDefinitionByTag(const FGameplayTag& ItemTag) const;
+
+	TMap<FGameplayTag, int32> GetInventoryTagMap();
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TMap<FGameplayTag, int32> InventoryTagMap;

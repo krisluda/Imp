@@ -5,8 +5,11 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "InputActionValue.h"
-#include "ImpInventoryComponent.h"
+#include "InventoryComponent.h"
+#include "InventoryWidgetController.h"
+#include "ImpWidget.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Blueprint/UserWidget.h"
 #include "Log.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/Character.h"
@@ -21,19 +24,42 @@ AImpPlayerController::AImpPlayerController() {
     JumpAction = LoadObject<UInputAction>(nullptr, TEXT("/Game/Imp/Core/Player/Input/IA_Jump.IA_Jump"));
 
 
-    ImpInventoryComponent = CreateDefaultSubobject<UImpInventoryComponent>("ImpInventoryComponent");
-    ImpInventoryComponent->SetIsReplicated(true);
-}
-
-UAbilitySystemComponent* AImpPlayerController::GetAbilitySystemComponent() const {
-    return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
+    InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("InventoryComponent");
+    InventoryComponent->SetIsReplicated(true);
 }
 
 void AImpPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(AImpPlayerController, ImpInventoryComponent);
+    DOREPLIFETIME(AImpPlayerController, InventoryComponent);
 }
+
+UInventoryComponent *AImpPlayerController::GetInventoryComponent_Implementation() {
+    return InventoryComponent;
+}
+
+UInventoryWidgetController *AImpPlayerController::GetInventoryWidgetController() {
+    if (!IsValid(InventoryWidgetController)) {
+        InventoryWidgetController = NewObject<UInventoryWidgetController>(this, InventoryWidgetControllerClass);
+        InventoryWidgetController->SetOwningActor(this);
+    }
+
+    return InventoryWidgetController;
+}
+
+void AImpPlayerController::CreateInventoryWidget() {
+    if (UUserWidget* Widget = CreateWidget<UImpWidget>(this, InventoryWidgetClass)) {
+        InventoryWidget = Cast<UImpWidget>(Widget);
+        InventoryWidget->SetWidgetController(GetInventoryWidgetController());
+        InventoryWidget->AddToViewport();
+    }
+}
+
+UAbilitySystemComponent *AImpPlayerController::GetAbilitySystemComponent() const
+{
+    return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
+}
+
 
 void AImpPlayerController::BeginPlay() {
     Super::BeginPlay();

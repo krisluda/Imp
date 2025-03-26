@@ -3,25 +3,34 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/PlayerController.h"
-#include "Logging/LogMacros.h"
+#include "InventoryInterface.h"
 #include "ImpPlayerController.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
-class UImpInventoryComponent;
+class UInventoryComponent;
+class UInventoryWidgetController;
+class UImpWidget;
 
 UCLASS ()
-class IMP_API AImpPlayerController : public APlayerController, public IAbilitySystemInterface {
+class IMP_API AImpPlayerController : public APlayerController, public IAbilitySystemInterface, public IInventoryInterface {
     GENERATED_BODY()
         
 public:
     AImpPlayerController();
+    
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+    /* Implement Inventory Interface */
+    virtual UInventoryComponent* GetInventoryComponent_Implementation() override;
+
+    UInventoryWidgetController* GetInventoryWidgetController();
+    void CreateInventoryWidget();
+
+    //This might have to be moved above widget controller stuff here and in cpp?
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-    
     virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;
     
@@ -43,6 +52,17 @@ public:
     UInputAction* JumpAction;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Replicated)
-    TObjectPtr<UImpInventoryComponent> ImpInventoryComponent;
+    TObjectPtr<UInventoryComponent> InventoryComponent;
+
+    UPROPERTY()
+    TObjectPtr<UInventoryWidgetController> InventoryWidgetController;
+
+    UPROPERTY(EditDefaultsOnly, Category="Custom Values|Widgets")
+    TSubclassOf<UInventoryWidgetController> InventoryWidgetControllerClass;
     
+    UPROPERTY()
+    TObjectPtr<UImpWidget> InventoryWidget;
+
+    UPROPERTY(EditDefaultsOnly, Category="Custom Values|Widgets")
+    TSubclassOf<UImpWidget> InventoryWidgetClass;
 };

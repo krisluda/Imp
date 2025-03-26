@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ImpInventoryComponent.h"
+#include "InventoryComponent.h"
 #include "ImpAbilitySystemComponent.h"
 #include "ImpAbilitySystemLibrary.h"
 #include "ItemTypesToTables.h"
@@ -21,18 +21,18 @@ bool FPackagedInventory::NetSerialize(FArchive &Ar, UPackageMap *Map, bool &bOut
 	return true;
 }
 
-UImpInventoryComponent::UImpInventoryComponent() {
+UInventoryComponent::UInventoryComponent() {
 	PrimaryComponentTick.bCanEverTick = false;
 
 }
 
-void UImpInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME(UImpInventoryComponent, CachedInventory);
+	DOREPLIFETIME(UInventoryComponent, CachedInventory);
 }
 
-void UImpInventoryComponent::AddItem(const FGameplayTag &ItemTag, int32 NumItems) {
+void UInventoryComponent::AddItem(const FGameplayTag &ItemTag, int32 NumItems) {
 	AActor* Owner = GetOwner();
 	if (!IsValid(Owner)) return;
 
@@ -47,17 +47,18 @@ void UImpInventoryComponent::AddItem(const FGameplayTag &ItemTag, int32 NumItems
 		InventoryTagMap.Emplace(ItemTag, NumItems);
 	}
 
-	IMP_DEBUGMSG(Red, "UImpInventoryComponent::AddItem: Server Item Added to %s's Inventory %s, qty: %d", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *ItemTag.ToString(), NumItems);
-	IMP_LOG("UImpInventoryComponent::AddItem: Server Item Added to %s's Inventory %s, qty: %d", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *ItemTag.ToString(), NumItems);
+	IMP_DEBUGMSG(Red, "UInventoryComponent::AddItem: Server Item Added to %s's Inventory %s, qty: %d", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *ItemTag.ToString(), NumItems);
+	IMP_LOG("UInventoryComponent::AddItem: Server Item Added to %s's Inventory %s, qty: %d", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *ItemTag.ToString(), NumItems);
 	
 	PackageInventory(CachedInventory);
+	InventoryPackagedDelegate.Broadcast(CachedInventory);
 }
 
-void UImpInventoryComponent::ServerAddItem_Implementation(const FGameplayTag &ItemTag, int32 NumItems) {
+void UInventoryComponent::ServerAddItem_Implementation(const FGameplayTag &ItemTag, int32 NumItems) {
 	AddItem(ItemTag, NumItems);
 }
 
-void UImpInventoryComponent::PackageInventory(FPackagedInventory& OutInventory) {
+void UInventoryComponent::PackageInventory(FPackagedInventory& OutInventory) {
 	OutInventory.ItemTags.Empty();
 	OutInventory.ItemQuantities.Empty();
 	
@@ -70,19 +71,19 @@ void UImpInventoryComponent::PackageInventory(FPackagedInventory& OutInventory) 
 	
 }
 
-void UImpInventoryComponent::ReconstructInventoryMap(const FPackagedInventory &Inventory) {
+void UInventoryComponent::ReconstructInventoryMap(const FPackagedInventory &Inventory) {
 	InventoryTagMap.Empty();
 	
 	for (int32 i = 0; i < Inventory.ItemTags.Num(); ++i) {
 		InventoryTagMap.Emplace(Inventory.ItemTags[i], Inventory.ItemQuantities[i]);
 		
-		IMP_DEBUGMSG(Blue, "UImpInventoryComponent::ReconstructInventoryMap: In Player %s's Inventory, Tag Added: %s // Quantity Added: %d", 
+		IMP_DEBUGMSG(Blue, "UInventoryComponent::ReconstructInventoryMap: In Player %s's Inventory, Tag Added: %s // Quantity Added: %d", 
 			*Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), 
 			*Inventory.ItemTags[i].ToString(), 
 			Inventory.ItemQuantities[i]
 		);
 
-		IMP_LOG("UImpInventoryComponent::ReconstructInventoryMap: In Player %s's Inventory, Tag Added: %s // Quantity Added: %d", 
+		IMP_LOG("UInventoryComponent::ReconstructInventoryMap: In Player %s's Inventory, Tag Added: %s // Quantity Added: %d", 
 			*Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), 
 			*Inventory.ItemTags[i].ToString(), 
 			Inventory.ItemQuantities[i]
@@ -90,11 +91,12 @@ void UImpInventoryComponent::ReconstructInventoryMap(const FPackagedInventory &I
 	}
 }
 
-void UImpInventoryComponent::OnRep_CachedInventory() {
+void UInventoryComponent::OnRep_CachedInventory() {
 	ReconstructInventoryMap(CachedInventory);
+	InventoryPackagedDelegate.Broadcast(CachedInventory);
 }
 
-void UImpInventoryComponent::UseItem(const FGameplayTag &ItemTag, int32 NumItems) {
+void UInventoryComponent::UseItem(const FGameplayTag &ItemTag, int32 NumItems) {
 	AActor* Owner = GetOwner();
 	if (!IsValid(Owner)) return;
 
@@ -114,17 +116,17 @@ void UImpInventoryComponent::UseItem(const FGameplayTag &ItemTag, int32 NumItems
 
 		AddItem(ItemTag, -1);
 
-		IMP_DEBUGMSG(Magenta, "UImpInventoryComponent::UseItem: Player %s Server Item Used: %s,", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *Item.ItemTag.ToString());
-		IMP_LOG("UImpInventoryComponent::UseItem: Player %s Server Item Used: %s", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *Item.ItemTag.ToString());
+		IMP_DEBUGMSG(Magenta, "UInventoryComponent::UseItem: Player %s Server Item Used: %s,", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *Item.ItemTag.ToString());
+		IMP_LOG("UInventoryComponent::UseItem: Player %s Server Item Used: %s", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *Item.ItemTag.ToString());
 	}
 }
 
-void UImpInventoryComponent::ServerUseItem_Implementation(const FGameplayTag &ItemTag, int32 NumItems) {
+void UInventoryComponent::ServerUseItem_Implementation(const FGameplayTag &ItemTag, int32 NumItems) {
 	UseItem(ItemTag, NumItems);
 }
 
-FMasterItemDefinition UImpInventoryComponent::GetItemDefinitionByTag(const FGameplayTag &ItemTag) const {
-    checkf(InventoryDefinitions, TEXT("UImpInventoryComponent:GetItemDefinitionByTag: No Definitions Inside Component %s"), *GetNameSafe(this));
+FMasterItemDefinition UInventoryComponent::GetItemDefinitionByTag(const FGameplayTag &ItemTag) const {
+    checkf(InventoryDefinitions, TEXT("UInventoryComponent:GetItemDefinitionByTag: No Definitions Inside Component %s"), *GetNameSafe(this));
 
 	for (const auto& Pair : InventoryDefinitions->TagsToTables) {
 		if (ItemTag.MatchesTag(Pair.Key)) {
@@ -133,5 +135,9 @@ FMasterItemDefinition UImpInventoryComponent::GetItemDefinitionByTag(const FGame
 	}
 
 	return FMasterItemDefinition();
+}
+
+TMap<FGameplayTag,int32> UInventoryComponent::GetInventoryTagMap() {
+	return InventoryTagMap;
 }
 
