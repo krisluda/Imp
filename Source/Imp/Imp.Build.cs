@@ -36,6 +36,8 @@ public class Imp : ModuleRules {
 			Path.Combine(ModuleDirectory, "Global"),
 			Path.Combine(ModuleDirectory, "Inventory"),
 			Path.Combine(ModuleDirectory, "Player"),
+			Path.Combine(ModuleDirectory, "UI"),
+			Path.Combine(ModuleDirectory, "UI/WidgetControllers"),
 		});
 	}
 }
