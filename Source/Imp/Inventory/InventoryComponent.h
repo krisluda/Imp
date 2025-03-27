@@ -43,9 +43,11 @@ class IMP_API UInventoryComponent : public UActorComponent {
 
 public:	
 	UInventoryComponent();
-
+	
 	FInventoryPackagedSignature InventoryPackagedDelegate;
-
+	
+	bool bOwnerLocallyControlled = false; //to prevent others from getting the inventory of others?
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable)

@@ -40,6 +40,10 @@ void AImpPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> 
 void AImpPlayerController::BeginPlay() {
     Super::BeginPlay();
 
+    if (IsValid(InventoryComponent)) {
+        InventoryComponent->bOwnerLocallyControlled = IsLocalController();
+    }
+
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())) {
         Subsystem->AddMappingContext(InputMapping, 0);
     }

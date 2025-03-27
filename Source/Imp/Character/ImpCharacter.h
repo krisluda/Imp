@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
-#include "GameplayTagContainer.h"
+#include "CharacterBase.h"
 #include "ImpCharacter.generated.h"
 
 class USpringArmComponent;
@@ -12,7 +12,7 @@ class UImpAbilitySystemComponent;
 class UImpAttributeSet;
 
 UCLASS()
-class IMP_API AImpCharacter : public ACharacter, public IAbilitySystemInterface {
+class IMP_API AImpCharacter : public ACharacterBase, public IAbilitySystemInterface {
     GENERATED_BODY()
     
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -28,17 +28,21 @@ public:
     virtual void OnRep_PlayerState() override;
 
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
+    
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
+
+/* From CharacterBase */
+    virtual void InitAbilityActorInfo() override;
+/* End From CharacterBase */
     
-    //**Uhr says these will be refactored later. I wonder if they should be on PlayerState at some point**//
+//**Uhr says these will be refactored later. I wonder if they should be on PlayerState at some point**//
     UFUNCTION(BlueprintImplementableEvent)
     void OnHealthChanged(float CurrentHealth, float MaxHealth);
     
     UFUNCTION(BlueprintImplementableEvent)
     void OnManaChanged(float CurrentMana, float MaxMana);
-    //** End **//
+//** End **//
 
     UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComponent;
@@ -46,10 +50,7 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UImpAttributeSet> ImpAttributeSet;
 
-    UPROPERTY(EditAnywhere, Category = "Custom Values|Character Info")
-    FGameplayTag CharacterTag;
-    
-    void InitAbilityActorInfo();
+
     void InitClassDefaults();
     void BindCallbacksToDependencies();
 

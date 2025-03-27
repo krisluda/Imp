@@ -31,6 +31,7 @@ public class Imp : ModuleRules {
 		PublicIncludePaths.AddRange(new string[] {
 			ModuleDirectory,
 			Path.Combine(ModuleDirectory, "Actors"),
+			Path.Combine(ModuleDirectory, "Character"),
 			Path.Combine(ModuleDirectory, "Game"),
 			Path.Combine(ModuleDirectory, "GAS"),
 			Path.Combine(ModuleDirectory, "GAS/Abilities"),
