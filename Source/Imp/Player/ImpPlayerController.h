@@ -4,14 +4,17 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/PlayerController.h"
 #include "InventoryInterface.h"
+#include "GameplayTagContainer.h"
 #include "ImpPlayerController.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class UImpAbilitySystemComponent;
 class UInventoryComponent;
 class UInventoryWidgetController;
 class UImpWidget;
+class UImpInputConfig;
 
 UCLASS ()
 class IMP_API AImpPlayerController : public APlayerController, public IAbilitySystemInterface, public IInventoryInterface {
@@ -24,7 +27,13 @@ public:
 
     virtual void BeginPlay() override;
     
+    //This might be removed, not sure. Uhr gets rid of it at some point, but i believe it is asked for i BP. It actually needs an override to compile
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+    //This
+    UPROPERTY()
+    TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComp;
+
 
 /* INVENTORY SECTION */
 
@@ -55,9 +64,15 @@ public:
     
 
 /* INPUT SECTION */
-
     virtual void SetupInputComponent() override;
-    
+
+    UPROPERTY(EditDefaultsOnly, Category="Custom Values|Input")
+    TObjectPtr<UImpInputConfig> ImpInputConfig;
+
+    void AbilityInputPressed(FGameplayTag InputTag);
+    void AbilityInputReleased(FGameplayTag InputTag);
+
+//Old movement shit below, lets see if it stays
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
     void Jump();
@@ -74,6 +89,7 @@ public:
     
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     UInputAction* JumpAction;
+//Old movement shit above
 
 /* INPUT SECTION END */
 

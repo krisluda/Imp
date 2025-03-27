@@ -1,5 +1,7 @@
 #include "ImpPlayerController.h"
 #include "ImpCharacter.h"
+#include "ImpPlayerState.h"
+#include "ImpAbilitySystemComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -8,6 +10,7 @@
 #include "InventoryComponent.h"
 #include "InventoryWidgetController.h"
 #include "ImpWidget.h"
+#include "ImpInputComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "Log.h"
@@ -37,21 +40,28 @@ void AImpPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> 
 void AImpPlayerController::BeginPlay() {
     Super::BeginPlay();
 
+    if (const AImpPlayerState* ImpPlayerState = GetPlayerState<AImpPlayerState>()) {
+        ImpAbilitySystemComp = ImpPlayerState->GetImpAbilitySystemComponent();
+    }
+
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())) {
         Subsystem->AddMappingContext(InputMapping, 0);
     }
 }
 
-UAbilitySystemComponent *AImpPlayerController::GetAbilitySystemComponent() const
-{
-    return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
+/* Uhr doesnt use this, but case the cache in Begin play might do whatever necessary in a better way. */
+UAbilitySystemComponent *AImpPlayerController::GetAbilitySystemComponent() const {
+    IMP_LOG("AImpPlayerController::GetAbilitySystemComponent override: This getter ran, but maybe it shouldn't")
+    return nullptr;
+    //return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
 }
 
-UInventoryComponent *AImpPlayerController::GetInventoryComponent_Implementation() {
+
+UInventoryComponent* AImpPlayerController::GetInventoryComponent_Implementation() {
     return InventoryComponent;
 }
 
-UInventoryWidgetController *AImpPlayerController::GetInventoryWidgetController() {
+UInventoryWidgetController* AImpPlayerController::GetInventoryWidgetController() {
     if (!IsValid(InventoryWidgetController)) {
         InventoryWidgetController = NewObject<UInventoryWidgetController>(this, InventoryWidgetControllerClass);
         InventoryWidgetController->SetOwningActor(this);
@@ -70,14 +80,32 @@ void AImpPlayerController::CreateInventoryWidget() {
     }
 }
 
-void AImpPlayerController::SetupInputComponent() {
-    Super::SetupInputComponent();
 
+void AImpPlayerController::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+    
+    if (UImpInputComponent* ImpInputComp = Cast<UImpInputComponent>(InputComponent)) {
+        ImpInputComp->BindAbilityActions(ImpInputConfig, this, &ThisClass::AbilityInputPressed, &ThisClass::AbilityInputReleased);
+    }
+    
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent)) {
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AImpPlayerController::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AImpPlayerController::Look);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AImpPlayerController::Jump);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AImpPlayerController::StopJumping);
+    }
+}
+
+void AImpPlayerController::AbilityInputPressed(FGameplayTag InputTag) {
+    if (IsValid(ImpAbilitySystemComp)) {
+        ImpAbilitySystemComp->AbilityInputPressed(InputTag);
+    }
+}
+
+void AImpPlayerController::AbilityInputReleased(FGameplayTag InputTag) {
+    if (IsValid(ImpAbilitySystemComp)) {
+        ImpAbilitySystemComp->AbilityInputReleased(InputTag);
     }
 }
 
