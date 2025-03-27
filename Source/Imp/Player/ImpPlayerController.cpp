@@ -40,20 +40,26 @@ void AImpPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> 
 void AImpPlayerController::BeginPlay() {
     Super::BeginPlay();
 
-    if (const AImpPlayerState* ImpPlayerState = GetPlayerState<AImpPlayerState>()) {
-        ImpAbilitySystemComp = ImpPlayerState->GetImpAbilitySystemComponent();
-    }
-
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())) {
         Subsystem->AddMappingContext(InputMapping, 0);
     }
 }
 
 /* Uhr doesnt use this, but case the cache in Begin play might do whatever necessary in a better way. */
-UAbilitySystemComponent *AImpPlayerController::GetAbilitySystemComponent() const {
+UAbilitySystemComponent* AImpPlayerController::GetAbilitySystemComponent() const {
     IMP_LOG("AImpPlayerController::GetAbilitySystemComponent override: This getter ran, but maybe it shouldn't")
     return nullptr;
     //return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
+}
+
+UImpAbilitySystemComponent* AImpPlayerController::GetImpAbilitySystemComponent() {
+    if (!IsValid(ImpAbilitySystemComp)) {
+        if (const AImpPlayerState* ImpPlayerState = GetPlayerState<AImpPlayerState>()) {
+            ImpAbilitySystemComp = ImpPlayerState->GetImpAbilitySystemComponent();
+        }
+    }
+
+    return ImpAbilitySystemComp;
 }
 
 
@@ -98,7 +104,7 @@ void AImpPlayerController::SetupInputComponent()
 }
 
 void AImpPlayerController::AbilityInputPressed(FGameplayTag InputTag) {
-    if (IsValid(ImpAbilitySystemComp)) {
+    if (IsValid(GetImpAbilitySystemComponent())) {
         ImpAbilitySystemComp->AbilityInputPressed(InputTag);
     }
 }

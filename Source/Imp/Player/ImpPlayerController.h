@@ -30,6 +30,8 @@ public:
     //This might be removed, not sure. Uhr gets rid of it at some point, but i believe it is asked for i BP. It actually needs an override to compile
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+    UImpAbilitySystemComponent* GetImpAbilitySystemComponent();
+
     //This
     UPROPERTY()
     TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComp;
