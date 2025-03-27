@@ -31,18 +31,12 @@ public:
     
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
-
+    
 /* From CharacterBase */
     virtual void InitAbilityActorInfo() override;
+    virtual void BindCallbacksToDependencies() override;
+    virtual void InitClassDefaults() override;
 /* End From CharacterBase */
-    
-//**Uhr says these will be refactored later. I wonder if they should be on PlayerState at some point**//
-    UFUNCTION(BlueprintImplementableEvent)
-    void OnHealthChanged(float CurrentHealth, float MaxHealth);
-    
-    UFUNCTION(BlueprintImplementableEvent)
-    void OnManaChanged(float CurrentMana, float MaxMana);
-//** End **//
 
     UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComponent;
@@ -50,9 +44,6 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UImpAttributeSet> ImpAttributeSet;
 
-
-    void InitClassDefaults();
-    void BindCallbacksToDependencies();
 
     UFUNCTION(BlueprintCallable)
     void BroadcastInitialValues();

@@ -25,14 +25,13 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
+	virtual void BindCallbacksToDependencies() override;
+	virtual void InitClassDefaults() override;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComp;
 	
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UImpAttributeSet> ImpAttributes;
-
-	void InitClassDefaults();
-
 
 };

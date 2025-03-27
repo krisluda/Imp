@@ -15,9 +15,19 @@ class IMP_API ACharacterBase : public ACharacter
 public:
 	ACharacterBase();
 
+	//**Uhr says these will be refactored later. I wonder if they should be on PlayerState at some point**//
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnHealthChanged(float CurrentHealth, float MaxHealth);
+    
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnManaChanged(float CurrentMana, float MaxMana);
+	//** End **//
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo();
+	virtual void BindCallbacksToDependencies();
+	virtual void InitClassDefaults();
 
 	UPROPERTY(EditAnywhere, Category = "Custom Values|Character Info")
     FGameplayTag CharacterTag;

@@ -39,6 +39,16 @@ void AEnemyBase::InitAbilityActorInfo() {
     }
 }
 
+void AEnemyBase::BindCallbacksToDependencies() {
+    if (IsValid(ImpAbilitySystemComp) && IsValid(ImpAttributes)) {
+        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributes->GetHealthAttribute()).AddLambda(
+            [this] (const FOnAttributeChangeData& Data) {
+                OnHealthChanged(Data.NewValue, ImpAttributes->GetMaxHealth());
+            }
+        );
+    }
+}
+
 void AEnemyBase::InitClassDefaults() {
     if (!CharacterTag.IsValid()) {
         IMP_LOG("AEnemyBase::InitClassDefaults: No character tag selected in character %s", *GetNameSafe(this));
