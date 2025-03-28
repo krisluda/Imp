@@ -15,10 +15,14 @@ void ACharacterBase::InitAbilityActorInfo() {
 	//Intentionally blank for now
 }
 
+void ACharacterBase::InitClassDefaults() {
+	//Intentionally blank for now
+}
+
 void ACharacterBase::BindCallbacksToDependencies() {
 	//Intentionally blank for now
 }
 
-void ACharacterBase::InitClassDefaults() {
+void ACharacterBase::BroadcastInitialValues() {
 	//Intentionally blank for now
 }

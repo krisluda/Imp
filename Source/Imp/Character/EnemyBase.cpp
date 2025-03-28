@@ -5,8 +5,9 @@
 #include "ImpCharacterClassInfo.h"
 #include "ImpAttributeSet.h"
 #include "ImpAbilitySystemLibrary.h"
-#include "Log.h"
 #include "ImpAbilitySystemComponent.h"
+#include "Log.h"
+#include "Net/UnrealNetwork.h"
 
 AEnemyBase::AEnemyBase() {
     bReplicates = true;
@@ -23,9 +24,16 @@ UAbilitySystemComponent* AEnemyBase::GetAbilitySystemComponent() const {
     return ImpAbilitySystemComp;
 }
 
+void AEnemyBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AEnemyBase, bInitAttributes);
+}
+
 void AEnemyBase::BeginPlay() {
     Super::BeginPlay();
 
+    BindCallbacksToDependencies();
     InitAbilityActorInfo();
 }
 
@@ -35,17 +43,8 @@ void AEnemyBase::InitAbilityActorInfo() {
 
         if (HasAuthority()) {
             InitClassDefaults();
+            BroadcastInitialValues();
         }
-    }
-}
-
-void AEnemyBase::BindCallbacksToDependencies() {
-    if (IsValid(ImpAbilitySystemComp) && IsValid(ImpAttributes)) {
-        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributes->GetHealthAttribute()).AddLambda(
-            [this] (const FOnAttributeChangeData& Data) {
-                OnHealthChanged(Data.NewValue, ImpAttributes->GetMaxHealth());
-            }
-        );
     }
 }
 
@@ -61,4 +60,32 @@ void AEnemyBase::InitClassDefaults() {
             }
         }
     }
+}
+
+void AEnemyBase::BindCallbacksToDependencies() {
+    if (IsValid(ImpAbilitySystemComp) && IsValid(ImpAttributes)) {
+        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributes->GetHealthAttribute()).AddLambda(
+            [this] (const FOnAttributeChangeData& Data) {
+                OnHealthChanged(Data.NewValue, ImpAttributes->GetMaxHealth());
+            }
+        );
+
+        if (HasAuthority()) {
+            ImpAbilitySystemComp->OnAttributesGiven.AddLambda(
+                [this] {
+                    bInitAttributes = true;
+                }
+            );
+        }
+    }
+}
+
+void AEnemyBase::BroadcastInitialValues() {
+    if (IsValid(ImpAttributes)) {
+        OnHealthChanged(ImpAttributes->GetHealth(), ImpAttributes->GetMaxHealth());
+    }
+}
+
+void AEnemyBase::OnRep_InitAttributes() {
+    BroadcastInitialValues();
 }

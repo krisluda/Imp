@@ -34,8 +34,9 @@ public:
     
 /* From CharacterBase */
     virtual void InitAbilityActorInfo() override;
-    virtual void BindCallbacksToDependencies() override;
     virtual void InitClassDefaults() override;
+    virtual void BindCallbacksToDependencies() override;
+    virtual void BroadcastInitialValues() override;
 /* End From CharacterBase */
 
     UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
@@ -45,8 +46,6 @@ public:
     TObjectPtr<UImpAttributeSet> ImpAttributeSet;
 
 
-    UFUNCTION(BlueprintCallable)
-    void BroadcastInitialValues();
     
     void Move(const FVector2D& InputValue);
     void Look(const FVector2D& InputValue);

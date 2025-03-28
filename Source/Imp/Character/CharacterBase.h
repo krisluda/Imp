@@ -26,8 +26,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo();
-	virtual void BindCallbacksToDependencies();
 	virtual void InitClassDefaults();
+	virtual void BindCallbacksToDependencies();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void BroadcastInitialValues();
 
 	UPROPERTY(EditAnywhere, Category = "Custom Values|Character Info")
     FGameplayTag CharacterTag;
