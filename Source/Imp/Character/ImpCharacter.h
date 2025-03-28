@@ -31,6 +31,8 @@ public:
     
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     
 /* From CharacterBase */
     virtual void InitAbilityActorInfo() override;
@@ -40,10 +42,16 @@ public:
 /* End From CharacterBase */
 
     UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComponent;
+    TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComp;
     
     UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UImpAttributeSet> ImpAttributeSet;
+
+    UPROPERTY(ReplicatedUsing=OnRep_InitAttributes)
+    bool bInitAttributes = false;
+
+    UFUNCTION()
+    void OnRep_InitAttributes();
 
 
     

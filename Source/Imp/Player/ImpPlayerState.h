@@ -28,7 +28,7 @@ public:
 	UImpAttributeSet* GetImpAttributeSet() const; 
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComponent;
+	TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComp;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta  = (AllowPrivateAccess = true))
 	TObjectPtr<UImpAttributeSet> ImpAttributeSet;

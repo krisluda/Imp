@@ -20,7 +20,7 @@ AImpCharacter::AImpCharacter() {
     bReplicates = true;
     bAlwaysRelevant = true;
 
-    ImpAbilitySystemComponent = CreateDefaultSubobject<UImpAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+    ImpAbilitySystemComp = CreateDefaultSubobject<UImpAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
     GetCharacterMovement()->SetIsReplicated(true);
 
@@ -71,8 +71,8 @@ void AImpCharacter::OnRep_PlayerState() {
     InitAbilityActorInfo();
 }
 
-UAbilitySystemComponent *AImpCharacter::GetAbilitySystemComponent() const {
-    return ImpAbilitySystemComponent;
+UAbilitySystemComponent* AImpCharacter::GetAbilitySystemComponent() const {
+    return ImpAbilitySystemComp;
 }
 
 void AImpCharacter::BeginPlay() {
@@ -83,17 +83,24 @@ void AImpCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
+void AImpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const {
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AImpCharacter, bInitAttributes);
+}
+
 void AImpCharacter::InitAbilityActorInfo() {
     if (AImpPlayerState* ImpPlayerState = GetPlayerState<AImpPlayerState>()) {
-        ImpAbilitySystemComponent = ImpPlayerState->GetImpAbilitySystemComponent();
+        ImpAbilitySystemComp = ImpPlayerState->GetImpAbilitySystemComponent();
         ImpAttributeSet = ImpPlayerState->GetImpAttributeSet();
 
-        if (IsValid(ImpAbilitySystemComponent)) {
-            ImpAbilitySystemComponent->InitAbilityActorInfo(ImpPlayerState, this);
+        if (IsValid(ImpAbilitySystemComp)) {
+            ImpAbilitySystemComp->InitAbilityActorInfo(ImpPlayerState, this);
             BindCallbacksToDependencies();
 
             if (HasAuthority()) {
                 InitClassDefaults();
+                BroadcastInitialValues();
             } 
         }
     }
@@ -104,10 +111,10 @@ void AImpCharacter::InitClassDefaults() {
         IMP_LOG("AImpCharacter::InitClassDefaults: No Character Tag Selected In This Character %s", *GetNameSafe(this));
     } else if (UImpCharacterClassInfo* ClassInfo = UImpAbilitySystemLibrary::GetImpCharacterClassDefaultInfo(this)) {
         if (const FImpCharacterClassDefaultInfo* SelectedClassInfo = ClassInfo->ClassDefaultInfoMap.Find(CharacterTag)) {
-            if (IsValid(ImpAbilitySystemComponent)) {
-                ImpAbilitySystemComponent->AddCharacterAbilities(SelectedClassInfo->StartingAbilities);
-                ImpAbilitySystemComponent->AddCharacterPassiveAbilities(SelectedClassInfo->StartingPassives);
-                ImpAbilitySystemComponent->InitializeDefaultAttributes(SelectedClassInfo->DefaultAttributes);
+            if (IsValid(ImpAbilitySystemComp)) {
+                ImpAbilitySystemComp->AddCharacterAbilities(SelectedClassInfo->StartingAbilities);
+                ImpAbilitySystemComp->AddCharacterPassiveAbilities(SelectedClassInfo->StartingPassives);
+                ImpAbilitySystemComp->InitializeDefaultAttributes(SelectedClassInfo->DefaultAttributes);
             }
         }
 
@@ -115,18 +122,26 @@ void AImpCharacter::InitClassDefaults() {
 }
 
 void AImpCharacter::BindCallbacksToDependencies() {
-    if (IsValid(ImpAbilitySystemComponent) && IsValid(ImpAttributeSet)) {
-        ImpAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ImpAttributeSet->GetHealthAttribute()).AddLambda(
+    if (IsValid(ImpAbilitySystemComp) && IsValid(ImpAttributeSet)) {
+        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributeSet->GetHealthAttribute()).AddLambda(
             [this] (const FOnAttributeChangeData& Data) {
                 OnHealthChanged(Data.NewValue, ImpAttributeSet->GetMaxHealth());
             }
         );
 
-        ImpAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(ImpAttributeSet->GetManaAttribute()).AddLambda(
+        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributeSet->GetManaAttribute()).AddLambda(
             [this] (const FOnAttributeChangeData& Data) {
                 OnManaChanged(Data.NewValue, ImpAttributeSet->GetMaxMana());
             }
         );
+
+        if (HasAuthority()) {
+            ImpAbilitySystemComp->OnAttributesGiven.AddLambda(
+                [this] {
+                    bInitAttributes = true;
+                }
+            );
+        }
     }
 }
 
@@ -135,6 +150,10 @@ void AImpCharacter::BroadcastInitialValues() {
         OnHealthChanged(ImpAttributeSet->GetHealth(), ImpAttributeSet->GetMaxHealth());
         OnManaChanged(ImpAttributeSet->GetMana(), ImpAttributeSet->GetMaxMana());
     }
+}
+
+void AImpCharacter::OnRep_InitAttributes() {
+    BroadcastInitialValues();
 }
 
 void AImpCharacter::Move(const FVector2D &InputValue)

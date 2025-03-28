@@ -10,20 +10,20 @@ AImpPlayerState::AImpPlayerState() {
     SetNetUpdateFrequency(100.f);
     SetMinNetUpdateFrequency(66.f);
 
-    ImpAbilitySystemComponent = CreateDefaultSubobject<UImpAbilitySystemComponent>("AbilitySystemComponent");
-    ImpAbilitySystemComponent->SetIsReplicated(true);
-    ImpAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+    ImpAbilitySystemComp = CreateDefaultSubobject<UImpAbilitySystemComponent>("AbilitySystemComponent");
+    ImpAbilitySystemComp->SetIsReplicated(true);
+    ImpAbilitySystemComp->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
     ImpAttributeSet = CreateDefaultSubobject<UImpAttributeSet>("AttributeSet");
     
 }
 
 UAbilitySystemComponent* AImpPlayerState::GetAbilitySystemComponent() const {
-    return ImpAbilitySystemComponent;
+    return ImpAbilitySystemComp;
 }
 
 UImpAbilitySystemComponent *AImpPlayerState::GetImpAbilitySystemComponent() const {
-    return ImpAbilitySystemComponent;
+    return ImpAbilitySystemComp;
 }
 
 UImpAttributeSet *AImpPlayerState::GetImpAttributeSet() const {
