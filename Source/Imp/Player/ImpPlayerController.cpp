@@ -51,9 +51,10 @@ void AImpPlayerController::BeginPlay() {
 
 /* Uhr doesnt use this, but case the cache in Begin play might do whatever necessary in a better way. */
 UAbilitySystemComponent* AImpPlayerController::GetAbilitySystemComponent() const {
-    IMP_LOG("AImpPlayerController::GetAbilitySystemComponent override: This getter ran, but maybe it shouldn't")
-    return nullptr;
-    //return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
+    IMP_LOG("AImpPlayerController::GetAbilitySystemComponent override: This generic getter ran, but we also have a specific getter, so maybe they could be combined. See comment below");
+    //This is a generic getter for the AbilitySystemComp. We also made a specific getter for the ImpAbilitySystemComp that is used in the Ability Pressed and Released
+    //functions. Maybe they could be combined, but I didn't bother yet.
+    return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
 }
 
 UImpAbilitySystemComponent* AImpPlayerController::GetImpAbilitySystemComponent() {
