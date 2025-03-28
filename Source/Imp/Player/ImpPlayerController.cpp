@@ -52,8 +52,7 @@ void AImpPlayerController::BeginPlay() {
 /* Uhr doesnt use this, but case the cache in Begin play might do whatever necessary in a better way. */
 UAbilitySystemComponent* AImpPlayerController::GetAbilitySystemComponent() const {
     IMP_LOG("AImpPlayerController::GetAbilitySystemComponent override: This getter ran, but maybe it shouldn't")
-    return nullptr;
-    //return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
+    return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
 }
 
 UImpAbilitySystemComponent* AImpPlayerController::GetImpAbilitySystemComponent() {
