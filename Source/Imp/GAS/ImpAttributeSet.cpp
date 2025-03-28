@@ -3,6 +3,7 @@
 
 #include "ImpAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "Log.h"
 #include "Net/UnrealNetwork.h"
 
 void UImpAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -24,6 +25,8 @@ void UImpAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
     if (Data.EvaluatedData.Attribute == GetManaAttribute()) {
         SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
     }
+
+    
 }
 
 void UImpAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) {
