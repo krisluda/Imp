@@ -83,12 +83,6 @@ void AImpCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
-void AImpCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const {
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-    DOREPLIFETIME(AImpCharacter, bInitAttributes);
-}
-
 void AImpCharacter::InitAbilityActorInfo() {
     if (AImpPlayerState* ImpPlayerState = GetPlayerState<AImpPlayerState>()) {
         ImpAbilitySystemComp = ImpPlayerState->GetImpAbilitySystemComponent();
@@ -100,7 +94,6 @@ void AImpCharacter::InitAbilityActorInfo() {
 
             if (HasAuthority()) {
                 InitClassDefaults();
-                BroadcastInitialValues();
             } 
         }
     }
@@ -134,14 +127,6 @@ void AImpCharacter::BindCallbacksToDependencies() {
                 OnManaChanged(Data.NewValue, ImpAttributeSet->GetMaxMana());
             }
         );
-
-        if (HasAuthority()) {
-            ImpAbilitySystemComp->OnAttributesGiven.AddLambda(
-                [this] {
-                    bInitAttributes = true;
-                }
-            );
-        }
     }
 }
 
@@ -150,10 +135,6 @@ void AImpCharacter::BroadcastInitialValues() {
         OnHealthChanged(ImpAttributeSet->GetHealth(), ImpAttributeSet->GetMaxHealth());
         OnManaChanged(ImpAttributeSet->GetMana(), ImpAttributeSet->GetMaxMana());
     }
-}
-
-void AImpCharacter::OnRep_InitAttributes() {
-    BroadcastInitialValues();
 }
 
 void AImpCharacter::Move(const FVector2D &InputValue)
