@@ -32,7 +32,6 @@ public:
     //And this is the specific one that is used by Uhr, in the Ability Input-stuff.
     UImpAbilitySystemComponent* GetImpAbilitySystemComponent();
 
-    //This
     UPROPERTY()
     TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComp;
 
