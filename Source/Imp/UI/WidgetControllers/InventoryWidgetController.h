@@ -13,9 +13,7 @@ struct FPackagedInventory;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemSignature, const FMasterItemDefinition&, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryBroadcastComplete);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FScrollBoxResetSignature);
-/**
- * 
- */
+
 UCLASS(Blueprintable, BlueprintType)
 class IMP_API UInventoryWidgetController : public UImpWidgetController {
 	GENERATED_BODY()
@@ -34,11 +32,11 @@ public:
 	void SetOwningActor(AActor* InOwner);
 
 	void BindCallbacksToDependencies();
-	void BroadcastInitialValues();	
+	void BroadcastInitialValues();
 
 	void UpdateInventory(const FPackagedInventory& InventoryContents);
 	void BroadcastInventoryContents();
-	
+
 	UPROPERTY()
 	TObjectPtr<AActor> OwningActor;
 
