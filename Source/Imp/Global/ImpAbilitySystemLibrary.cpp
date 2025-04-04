@@ -6,9 +6,17 @@
 #include "Kismet/GameplayStatics.h"
 
 
-UImpCharacterClassInfo* UImpAbilitySystemLibrary::GetImpCharacterClassDefaultInfo(const UObject *WorldContextObject) {
+UImpCharacterClassInfo* UImpAbilitySystemLibrary::GetImpCharacterClassDefaultInfo(const UObject* WorldContextObject) {
     if (const AImpGameMode* ImpGameMode = Cast<AImpGameMode>(UGameplayStatics::GetGameMode(WorldContextObject))) {
         return ImpGameMode->GetImpCharacterClassDefaultInfo();
+    }
+
+    return nullptr;
+}
+
+UProjectileInfo* UImpAbilitySystemLibrary::GetProjectileInfo(const UObject* WorldContextObject) {
+    if (const AImpGameMode* ImpGameMode = Cast<AImpGameMode>(UGameplayStatics::GetGameMode(WorldContextObject))) {
+        return ImpGameMode->GetProjectileInfo();
     }
 
     return nullptr;

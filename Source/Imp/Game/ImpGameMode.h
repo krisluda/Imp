@@ -5,6 +5,7 @@
 #include "ImpGameMode.generated.h"
 
 class UImpCharacterClassInfo;
+class UProjectileInfo;
 
 UCLASS()
 class IMP_API AImpGameMode : public AGameMode {
@@ -21,7 +22,10 @@ public:
     void PostLogin(APlayerController* NewPlayer) override;
     void Logout(AController* Exiting) override;
 
+    //These getters somehow interact with abstract getters in the ImpAbilitySystemLibrary. 
+    //We don't use these directly, but via the blueprint library that then gets these off the game mode.
     UImpCharacterClassInfo* GetImpCharacterClassDefaultInfo() const;
+    UProjectileInfo* GetProjectileInfo() const;
 
 private:
     //kjører dette i private fordi Uhr gjør det i tutorialen på youtube, 
@@ -31,4 +35,7 @@ private:
 
     UPROPERTY(EditDefaultsOnly, Category = "Custom Values|Class Defaults")
     TObjectPtr<UImpCharacterClassInfo> ClassDefaults;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Custom Values|Projectiles")
+    TObjectPtr<UProjectileInfo> ProjectileInfo;
 };

@@ -45,3 +45,8 @@ void AImpGameMode::Logout(AController* Exiting) {
 UImpCharacterClassInfo *AImpGameMode::GetImpCharacterClassDefaultInfo() const {
     return ClassDefaults;
 }
+
+UProjectileInfo *AImpGameMode::GetProjectileInfo() const
+{
+    return ProjectileInfo;
+}
