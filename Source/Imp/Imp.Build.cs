@@ -32,6 +32,7 @@ public class Imp : ModuleRules {
 			ModuleDirectory,
 			Path.Combine(ModuleDirectory, "Actors"),
 			Path.Combine(ModuleDirectory, "Character"),
+			Path.Combine(ModuleDirectory, "Data"),
 			Path.Combine(ModuleDirectory, "Game"),
 			Path.Combine(ModuleDirectory, "GAS"),
 			Path.Combine(ModuleDirectory, "GAS/Abilities"),
@@ -40,6 +41,7 @@ public class Imp : ModuleRules {
 			Path.Combine(ModuleDirectory, "Interfaces"),
 			Path.Combine(ModuleDirectory, "Inventory"),
 			Path.Combine(ModuleDirectory, "Player"),
+			Path.Combine(ModuleDirectory, "Projectiles"),
 			Path.Combine(ModuleDirectory, "UI"),
 			Path.Combine(ModuleDirectory, "UI/WidgetControllers"),
 		});
