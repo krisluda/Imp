@@ -2,23 +2,36 @@
 
 
 #include "ProjectileBase.h"
+#include "ImpAbilityTypes.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
-// Sets default values
 AProjectileBase::AProjectileBase() {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
-}
+	bReplicates = true;
 
-// Called when the game starts or when spawned
-void AProjectileBase::BeginPlay() {
-	Super::BeginPlay();
+	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>("ProjectileMesh");
+	SetRootComponent(ProjectileMesh);
+	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ProjectileMesh->SetCollisionObjectType(ECC_WorldDynamic);
+	ProjectileMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	ProjectileMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	ProjectileMesh->SetIsReplicated(true);
 	
-}
-
-// Called every frame
-void AProjectileBase::Tick(float DeltaTime) {
-	Super::Tick(DeltaTime);
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComponent");
 
 }
 
+void AProjectileBase::SetProjectileParams(const FProjectileParams &Params) {
+	if (IsValid(ProjectileMesh)) {
+		ProjectileMesh->SetStaticMesh(Params.ProjectileMesh);
+
+	}
+
+	if (IsValid(ProjectileMovementComponent)) {
+		ProjectileMovementComponent->InitialSpeed = Params.InitialSpeed;
+		ProjectileMovementComponent->ProjectileGravityScale = Params.GravityScale;
+		ProjectileMovementComponent->bShouldBounce = Params.bShouldBounce;
+		ProjectileMovementComponent->Bounciness = Params.Bounciness;
+	}
+}

@@ -46,6 +46,9 @@ AImpCharacter::AImpCharacter() {
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCamera->bUsePawnControlRotation = false; //Camera itself does not rotate with controller relative to boom
 
+    DynamicProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>("ProjectileSpawnPoint");
+    DynamicProjectileSpawnPoint->SetupAttachment(GetRootComponent());
+
     GetCharacterMovement()->bOrientRotationToMovement = true; 
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
     GetCharacterMovement()->JumpZVelocity = 300.0f;
@@ -55,6 +58,11 @@ AImpCharacter::AImpCharacter() {
     GetCharacterMovement()->BrakingDecelerationWalking = 2000.0f;
     GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
     JumpMaxHoldTime = 0.2f;
+}
+
+USceneComponent * AImpCharacter::GetDynamicSpawnPoint_Implementation() {
+    
+    return DynamicProjectileSpawnPoint;
 }
 
 void AImpCharacter::PossessedBy(AController *NewController) {
