@@ -29,6 +29,7 @@ public:
 
 	FProjectileParams CurrentProjectileParams;
 
+	UFUNCTION(BlueprintCallable)
 	void SpawnProjectile();
 	
 };

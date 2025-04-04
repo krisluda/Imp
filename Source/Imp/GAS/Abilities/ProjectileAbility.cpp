@@ -18,7 +18,7 @@ void UProjectileAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInf
 
     if (!ProjectileToSpawnTag.IsValid() || IsValid(AvatarActorFromInfo)) return;
 
-    if (UProjectileInfo* ProjectileInfo = UImpAbilitySystemLibrary::GetProjectileInfo(AvatarActorFromInfo) {
+    if (UProjectileInfo* ProjectileInfo = UImpAbilitySystemLibrary::GetProjectileInfo(AvatarActorFromInfo)) {
         CurrentProjectileParams = *ProjectileInfo->ProjectileInfoMap.Find(ProjectileToSpawnTag);
     }
 }
