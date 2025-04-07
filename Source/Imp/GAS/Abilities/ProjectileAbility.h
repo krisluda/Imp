@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ImpGameplayAbility.h"
+#include "ImpDamageAbility.h"
 #include "ImpAbilityTypes.h"
 #include "ProjectileAbility.generated.h"
 
@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class IMP_API UProjectileAbility : public UImpGameplayAbility {
+class IMP_API UProjectileAbility : public UImpDamageAbility {
 
 	GENERATED_BODY()
 

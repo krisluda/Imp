@@ -19,7 +19,7 @@ void UProjectileAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInf
 
     if (!ProjectileToSpawnTag.IsValid() || !IsValid(AvatarActorFromInfo)) return;
 
-    if (UProjectileInfo* ProjectileInfo = UImpAbilitySystemLibrary::GetProjectileInfo(GetAvatarActorFromActorInfo())) {
+    if (UProjectileInfo* ProjectileInfo = UImpAbilitySystemLibrary::GetProjectileInfo(AvatarActorFromInfo)) {
         CurrentProjectileParams = *ProjectileInfo->ProjectileInfoMap.Find(ProjectileToSpawnTag);
     }
 }
@@ -37,8 +37,14 @@ void UProjectileAbility::SpawnProjectile() {
         SpawnTransform.SetLocation(SpawnPoint);
         SpawnTransform.SetRotation(TargetRotation.Quaternion());
         
-        if (AProjectileBase* SpawnedProjectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(CurrentProjectileParams.ProjectileClass, SpawnTransform)) {
+        if (AProjectileBase* SpawnedProjectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(CurrentProjectileParams.ProjectileClass, SpawnTransform, AvatarActorFromInfo)) {
             SpawnedProjectile->SetProjectileParams(CurrentProjectileParams);
+
+            FDamageEffectInfo DamageEffectInfo;
+            CaptureDamageEffectInfo(nullptr, DamageEffectInfo);
+
+            SpawnedProjectile->DamageEffectInfo = DamageEffectInfo;
+
             SpawnedProjectile->FinishSpawning(SpawnTransform);
         }
     }

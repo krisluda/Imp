@@ -3,6 +3,9 @@
 
 #include "ImpAbilitySystemLibrary.h"
 #include "ImpGameMode.h"
+#include "GameplayEffectTypes.h"
+#include "ImpAbilityTypes.h"
+#include "AbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -20,4 +23,16 @@ UProjectileInfo* UImpAbilitySystemLibrary::GetProjectileInfo(const UObject* Worl
     }
 
     return nullptr;
+}
+
+void UImpAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectInfo& DamageEffectInfo) {
+    FGameplayEffectContextHandle ContextHandle = DamageEffectInfo.SourceASC->MakeEffectContext();
+    ContextHandle.AddSourceObject(DamageEffectInfo.AvatarActor);
+
+    const FGameplayEffectSpecHandle SpecHandle = DamageEffectInfo.SourceASC->MakeOutgoingSpec(DamageEffectInfo.DamageEffect, DamageEffectInfo.AbilityLevel, ContextHandle);
+
+    if (IsValid(DamageEffectInfo.TargetASC)) {
+        DamageEffectInfo.TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+    }
+
 }

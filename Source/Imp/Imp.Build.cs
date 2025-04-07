@@ -39,6 +39,7 @@ public class Imp : ModuleRules {
 			Path.Combine(ModuleDirectory, "GAS"),
 			Path.Combine(ModuleDirectory, "GAS/Abilities"),
 			Path.Combine(ModuleDirectory, "Global"),
+			Path.Combine(ModuleDirectory, "Libraries"),
 			Path.Combine(ModuleDirectory, "Input"),
 			Path.Combine(ModuleDirectory, "Interfaces"),
 			Path.Combine(ModuleDirectory, "Inventory"),
