@@ -74,6 +74,9 @@ UInventoryComponent* AImpPlayerController::GetInventoryComponent_Implementation(
 void AImpPlayerController::SetDynamicProjectile_Implementation(const FGameplayTag &ProjectileTag, int32 AbilityLevel) {
     if (IsValid(ImpAbilitySystemComp)) {
         ImpAbilitySystemComp->SetDynamicProjectile(ProjectileTag, AbilityLevel);
+    } else {
+        IMP_DEBUGMSG(Red, "AImpPlayerController::SetDynamicProjectile_Implementation: ImpAbilitySystem not valid. It seems like it's too early.");
+        IMP_LOG("AImpPlayerController::SetDynamicProjectile_Implementation: ImpAbilitySystem not valid. It seems like it's too early.");
     }
 }
 

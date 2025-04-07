@@ -38,6 +38,7 @@ public class Imp : ModuleRules {
 			Path.Combine(ModuleDirectory, "Game/PlayerState"),
 			Path.Combine(ModuleDirectory, "GAS"),
 			Path.Combine(ModuleDirectory, "GAS/Abilities"),
+			Path.Combine(ModuleDirectory, "GAS/ExecCalc"),
 			Path.Combine(ModuleDirectory, "Global"),
 			Path.Combine(ModuleDirectory, "Libraries"),
 			Path.Combine(ModuleDirectory, "Input"),
