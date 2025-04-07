@@ -71,9 +71,9 @@ UInventoryComponent* AImpPlayerController::GetInventoryComponent_Implementation(
     return InventoryComponent;
 }
 
-void AImpPlayerController::SetDynamicProjectile_Implementation(const FGameplayTag &ProjectileTag) {
+void AImpPlayerController::SetDynamicProjectile_Implementation(const FGameplayTag &ProjectileTag, int32 AbilityLevel) {
     if (IsValid(ImpAbilitySystemComp)) {
-        ImpAbilitySystemComp->SetDynamicProjectile(ProjectileTag);
+        ImpAbilitySystemComp->SetDynamicProjectile(ProjectileTag, AbilityLevel);
     }
 }
 

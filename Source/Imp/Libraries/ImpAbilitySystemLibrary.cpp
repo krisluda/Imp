@@ -5,6 +5,8 @@
 #include "ImpGameMode.h"
 #include "GameplayEffectTypes.h"
 #include "ImpAbilityTypes.h"
+#include "ImpGameplayTags.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -30,6 +32,8 @@ void UImpAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectInfo& Damage
     ContextHandle.AddSourceObject(DamageEffectInfo.AvatarActor);
 
     const FGameplayEffectSpecHandle SpecHandle = DamageEffectInfo.SourceASC->MakeOutgoingSpec(DamageEffectInfo.DamageEffect, DamageEffectInfo.AbilityLevel, ContextHandle);
+
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ImpGameplayTags::Combat::Data_Damage, DamageEffectInfo.BaseDamage);
 
     if (IsValid(DamageEffectInfo.TargetASC)) {
         DamageEffectInfo.TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());

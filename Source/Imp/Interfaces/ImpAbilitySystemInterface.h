@@ -30,5 +30,5 @@ public:
 
 	// Uhr said this need the include, but it compiles without, so I'm testing without.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetDynamicProjectile(const FGameplayTag& ProjectileTag);
+	void SetDynamicProjectile(const FGameplayTag& ProjectileTag, int32 AbilityLevel = 1);
 };
