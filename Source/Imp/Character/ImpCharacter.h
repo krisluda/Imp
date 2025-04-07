@@ -51,7 +51,7 @@ public:
     TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComp;
     
     UPROPERTY(BlueprintReadOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UImpAttributeSet> ImpAttributeSet;
+    TObjectPtr<UImpAttributeSet> ImpAttributes;
 
     
     void Move(const FVector2D& InputValue);

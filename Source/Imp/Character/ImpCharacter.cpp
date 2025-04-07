@@ -93,7 +93,7 @@ void AImpCharacter::Tick(float DeltaTime) {
 void AImpCharacter::InitAbilityActorInfo() {
     if (AImpPlayerState* ImpPlayerState = GetPlayerState<AImpPlayerState>()) {
         ImpAbilitySystemComp = ImpPlayerState->GetImpAbilitySystemComponent();
-        ImpAttributeSet = ImpPlayerState->GetImpAttributeSet();
+        ImpAttributes = ImpPlayerState->GetImpAttributeSet();
 
         if (IsValid(ImpAbilitySystemComp)) {
             ImpAbilitySystemComp->InitAbilityActorInfo(ImpPlayerState, this);
@@ -122,25 +122,25 @@ void AImpCharacter::InitClassDefaults() {
 }
 
 void AImpCharacter::BindCallbacksToDependencies() {
-    if (IsValid(ImpAbilitySystemComp) && IsValid(ImpAttributeSet)) {
-        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributeSet->GetHealthAttribute()).AddLambda(
+    if (IsValid(ImpAbilitySystemComp) && IsValid(ImpAttributes)) {
+        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributes->GetHealthAttribute()).AddLambda(
             [this] (const FOnAttributeChangeData& Data) {
-                OnHealthChanged(Data.NewValue, ImpAttributeSet->GetMaxHealth());
+                OnHealthChanged(Data.NewValue, ImpAttributes->GetMaxHealth());
             }
         );
 
-        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributeSet->GetManaAttribute()).AddLambda(
+        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributes->GetShieldAttribute()).AddLambda(
             [this] (const FOnAttributeChangeData& Data) {
-                OnManaChanged(Data.NewValue, ImpAttributeSet->GetMaxMana());
+                OnShieldChanged(Data.NewValue, ImpAttributes->GetMaxShield());
             }
         );
     }
 }
 
 void AImpCharacter::BroadcastInitialValues() {
-    if (IsValid(ImpAttributeSet)) {
-        OnHealthChanged(ImpAttributeSet->GetHealth(), ImpAttributeSet->GetMaxHealth());
-        OnManaChanged(ImpAttributeSet->GetMana(), ImpAttributeSet->GetMaxMana());
+    if (IsValid(ImpAttributes)) {
+        OnHealthChanged(ImpAttributes->GetHealth(), ImpAttributes->GetMaxHealth());
+        OnShieldChanged(ImpAttributes->GetShield(), ImpAttributes->GetMaxShield());
     }
 }
 

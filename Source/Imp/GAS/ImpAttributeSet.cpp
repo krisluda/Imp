@@ -11,6 +11,9 @@ void UImpAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
     DOREPLIFETIME_CONDITION_NOTIFY(UImpAttributeSet, Health, COND_None, REPNOTIFY_Always);
     DOREPLIFETIME_CONDITION_NOTIFY(UImpAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+    DOREPLIFETIME_CONDITION_NOTIFY(UImpAttributeSet, Shield, COND_None, REPNOTIFY_Always);
+    DOREPLIFETIME_CONDITION_NOTIFY(UImpAttributeSet, MaxShield, COND_None, REPNOTIFY_Always);
+    DOREPLIFETIME_CONDITION_NOTIFY(UImpAttributeSet, DamageReduction, COND_None, REPNOTIFY_Always);
     DOREPLIFETIME_CONDITION_NOTIFY(UImpAttributeSet, Mana, COND_None, REPNOTIFY_Always);
     DOREPLIFETIME_CONDITION_NOTIFY(UImpAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 }
@@ -30,7 +33,9 @@ void UImpAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
         HandleIncomingHealthDamage(Data);
     }
 
-    
+    if (Data.EvaluatedData.Attribute == GetIncomingShieldDamageAttribute()) {
+        HandleIncomingShieldDamage(Data);
+    }
 }
 
 void UImpAttributeSet::HandleIncomingHealthDamage(const FGameplayEffectModCallbackData &Data) {
@@ -40,19 +45,38 @@ void UImpAttributeSet::HandleIncomingHealthDamage(const FGameplayEffectModCallba
     SetHealth(FMath::Clamp(GetHealth() - LocalDamage, 0.f, GetMaxHealth()));
 }
 
-void UImpAttributeSet::OnRep_Health(const FGameplayAttributeData &OldHealth)
+void UImpAttributeSet::HandleIncomingShieldDamage(const FGameplayEffectModCallbackData & Data) {
+    const float LocalShieldDamage = GetIncomingShieldDamage();
+    SetIncomingShieldDamage(0.f);
+
+    SetShield(FMath::Clamp(GetShield() - LocalShieldDamage, 0.f, GetMaxShield()));
+}
+
+void UImpAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
     GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, Health, OldHealth);
 }
 
-void UImpAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData &OldMaxHealth) {
+void UImpAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) {
     GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, Health, OldMaxHealth);
 }
 
-void UImpAttributeSet::OnRep_Mana(const FGameplayAttributeData &OldMana) {
+void UImpAttributeSet::OnRep_Shield(const FGameplayAttributeData& OldShield) {
+    GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, Shield, OldShield);
+}
+
+void UImpAttributeSet::OnRep_MaxShield(const FGameplayAttributeData& OldMaxShield) {
+    GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, MaxShield, OldMaxShield);
+}
+
+void UImpAttributeSet::OnRep_DamageReduction(const FGameplayAttributeData& OldDamageReduction) {
+    GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, DamageReduction, OldDamageReduction);
+}
+
+void UImpAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) {
     GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, Mana, OldMana);
 }
 
-void UImpAttributeSet::OnRep_MaxMana(const FGameplayAttributeData &OldMaxMana) {
+void UImpAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) {
     GAMEPLAYATTRIBUTE_REPNOTIFY(UImpAttributeSet, MaxMana, OldMaxMana);
 }

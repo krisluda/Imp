@@ -70,6 +70,12 @@ void AEnemyBase::BindCallbacksToDependencies() {
             }
         );
 
+        ImpAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(ImpAttributes->GetShieldAttribute()).AddLambda(
+            [this] (const FOnAttributeChangeData& Data) {
+                OnShieldChanged(Data.NewValue, ImpAttributes->GetMaxShield());
+            }
+        );
+
         if (HasAuthority()) {
             ImpAbilitySystemComp->OnAttributesGiven.AddLambda(
                 [this] {
@@ -83,6 +89,7 @@ void AEnemyBase::BindCallbacksToDependencies() {
 void AEnemyBase::BroadcastInitialValues() {
     if (IsValid(ImpAttributes)) {
         OnHealthChanged(ImpAttributes->GetHealth(), ImpAttributes->GetMaxHealth());
+        OnShieldChanged(ImpAttributes->GetShield(), ImpAttributes->GetMaxShield());
     }
 }
 
