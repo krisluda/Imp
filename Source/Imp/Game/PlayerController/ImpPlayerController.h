@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/PlayerController.h"
+#include "ImpAbilitySystemInterface.h"
 #include "InventoryInterface.h"
 #include "GameplayTagContainer.h"
 #include "ImpPlayerController.generated.h"
@@ -17,7 +18,7 @@ class UImpWidget;
 class UImpInputConfig;
 
 UCLASS ()
-class IMP_API AImpPlayerController : public APlayerController, public IAbilitySystemInterface, public IInventoryInterface {
+class IMP_API AImpPlayerController : public APlayerController, public IAbilitySystemInterface, public IInventoryInterface, public IImpAbilitySystemInterface {
     GENERATED_BODY()
         
 public:
@@ -38,8 +39,11 @@ public:
 
 /* INVENTORY SECTION */
 
-    /* Implement Inventory Interface */
+    /* Implement InventoryInterface */
     virtual UInventoryComponent* GetInventoryComponent_Implementation() override;
+
+    /* Implement ImpAbilitySystemInterface */
+    virtual void SetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag) override;
     
     UInventoryWidgetController* GetInventoryWidgetController();
     

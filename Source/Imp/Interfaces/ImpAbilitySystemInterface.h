@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+//#include "GameplayTagContainer.h"
 #include "ImpAbilitySystemInterface.generated.h"
 
 // This class does not need to be modified.
@@ -26,4 +27,8 @@ public:
 	// This is used on the character as a placeholder for spawning projectiles. Might need to change later to sockets or smth.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USceneComponent* GetDynamicSpawnPoint();
+
+	// Uhr said this need the include, but it compiles without, so I'm testing without.
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetDynamicProjectile(const FGameplayTag& ProjectileTag);
 };

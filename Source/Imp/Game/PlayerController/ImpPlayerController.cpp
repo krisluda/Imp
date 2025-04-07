@@ -71,7 +71,14 @@ UInventoryComponent* AImpPlayerController::GetInventoryComponent_Implementation(
     return InventoryComponent;
 }
 
-UInventoryWidgetController* AImpPlayerController::GetInventoryWidgetController() {
+void AImpPlayerController::SetDynamicProjectile_Implementation(const FGameplayTag &ProjectileTag) {
+    if (IsValid(ImpAbilitySystemComp)) {
+        ImpAbilitySystemComp->SetDynamicProjectile(ProjectileTag);
+    }
+}
+
+UInventoryWidgetController* AImpPlayerController::GetInventoryWidgetController()
+{
     if (!IsValid(InventoryWidgetController)) {
         InventoryWidgetController = NewObject<UInventoryWidgetController>(this, InventoryWidgetControllerClass);
         InventoryWidgetController->SetOwningActor(this);

@@ -60,8 +60,7 @@ AImpCharacter::AImpCharacter() {
     JumpMaxHoldTime = 0.2f;
 }
 
-USceneComponent * AImpCharacter::GetDynamicSpawnPoint_Implementation() {
-    
+USceneComponent* AImpCharacter::GetDynamicSpawnPoint_Implementation() {
     return DynamicProjectileSpawnPoint;
 }
 

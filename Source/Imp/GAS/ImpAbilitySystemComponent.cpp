@@ -2,6 +2,8 @@
 
 
 #include "ImpAbilitySystemComponent.h"
+#include "ProjectileAbility.h"
+#include "Log.h"
 #include "ImpGameplayAbility.h"
 
 void UImpAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>> &AbilitiesToGrant) {
@@ -73,4 +75,36 @@ void UImpAbilitySystemComponent::AbilityInputReleased(const FGameplayTag & Input
             InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
         }
     }
+}
+
+void UImpAbilitySystemComponent::SetDynamicProjectile(const FGameplayTag& ProjectileTag) {
+    if(!ProjectileTag.IsValid()) {
+        IMP_LOG("UImpAbilitySystemComponent::SetDynamicProjectile: No valid projectile tag.")
+        return;
+    }
+
+    if (!GetAvatarActor()->HasAuthority()) {
+        ServerSetDynamicProjectile(ProjectileTag);
+        return;
+    }
+
+    if (ActiveProjectileAbility.IsValid()) {
+        ClearAbility(ActiveProjectileAbility);
+    }
+
+    if (IsValid(DynamicProjectileAbility)) {
+        FGameplayAbilitySpec Spec = FGameplayAbilitySpec(DynamicProjectileAbility, 1);
+        if (UProjectileAbility* ProjectileAbility = Cast<UProjectileAbility>(Spec.Ability)) {
+            ProjectileAbility->ProjectileToSpawnTag = ProjectileTag;
+            Spec.DynamicAbilityTags.AddTag(ProjectileAbility->InputTag);
+
+            ActiveProjectileAbility = GiveAbility(Spec);
+        }
+    }
+
+
+}
+
+void UImpAbilitySystemComponent::ServerSetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag) {
+    SetDynamicProjectile(ProjectileTag);
 }
