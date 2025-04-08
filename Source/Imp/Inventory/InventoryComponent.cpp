@@ -47,7 +47,7 @@ void UInventoryComponent::AddItem(const FGameplayTag &ItemTag, int32 NumItems) {
 		InventoryTagMap.Emplace(ItemTag, NumItems);
 	}
 
-	//IMP_DEBUGMSG(Red, "UInventoryComponent::AddItem: Server Item Added to %s's Inventory %s, qty: %d", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *ItemTag.ToString(), NumItems);
+	//IMP_DEBUGMSG(FColor::Red, "UInventoryComponent::AddItem: Server Item Added to %s's Inventory %s, qty: %d", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *ItemTag.ToString(), NumItems);
 	//IMP_LOG("UInventoryComponent::AddItem: Server Item Added to %s's Inventory %s, qty: %d", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *ItemTag.ToString(), NumItems);
 	
 	PackageInventory(CachedInventory);
@@ -78,7 +78,7 @@ void UInventoryComponent::ReconstructInventoryMap(const FPackagedInventory &Inve
 		InventoryTagMap.Emplace(Inventory.ItemTags[i], Inventory.ItemQuantities[i]);
 		
 		/*
-		IMP_DEBUGMSG(Blue, "UInventoryComponent::ReconstructInventoryMap: In Player %s's Inventory, Tag Added: %s // Quantity Added: %d", 
+		IMP_DEBUGMSG(FColor::Blue, "UInventoryComponent::ReconstructInventoryMap: In Player %s's Inventory, Tag Added: %s // Quantity Added: %d", 
 			*Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), 
 			*Inventory.ItemTags[i].ToString(), 
 			Inventory.ItemQuantities[i]
@@ -120,7 +120,7 @@ void UInventoryComponent::UseItem(const FGameplayTag &ItemTag, int32 NumItems) {
 
 		AddItem(ItemTag, -1);
 
-		//IMP_DEBUGMSG(Magenta, "UInventoryComponent::UseItem: Player %s Server Item Used: %s,", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *Item.ItemTag.ToString());
+		//IMP_DEBUGMSG(FColor::Magenta, "UInventoryComponent::UseItem: Player %s Server Item Used: %s,", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *Item.ItemTag.ToString());
 		//IMP_LOG("UInventoryComponent::UseItem: Player %s Server Item Used: %s", *Cast<APlayerController>(GetOwner())->PlayerState->GetPlayerName(), *Item.ItemTag.ToString());
 	}
 }
