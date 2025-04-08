@@ -75,7 +75,7 @@ void AImpPlayerController::SetDynamicProjectile_Implementation(const FGameplayTa
     if (IsValid(ImpAbilitySystemComp)) {
         ImpAbilitySystemComp->SetDynamicProjectile(ProjectileTag, AbilityLevel);
     } else {
-        IMP_DEBUGMSG(Red, "AImpPlayerController::SetDynamicProjectile_Implementation: ImpAbilitySystem not valid. It seems like it's too early.");
+        IMP_DEBUGMSG(FColor::Red, "AImpPlayerController::SetDynamicProjectile_Implementation: ImpAbilitySystem not valid. It seems like it's too early.");
         IMP_LOG("AImpPlayerController::SetDynamicProjectile_Implementation: ImpAbilitySystem not valid. It seems like it's too early.");
     }
 }

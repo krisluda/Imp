@@ -36,6 +36,14 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UImpAttributeSet, MaxHealth);
 
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing=OnRep_Mana)
+	FGameplayAttributeData Mana;
+	ATTRIBUTE_ACCESSORS(UImpAttributeSet, Mana);
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing=OnRep_MaxMana)
+	FGameplayAttributeData MaxMana;
+	ATTRIBUTE_ACCESSORS(UImpAttributeSet, MaxMana);
+
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing=OnRep_Shield)
 	FGameplayAttributeData Shield;
 	ATTRIBUTE_ACCESSORS(UImpAttributeSet, Shield);
@@ -49,14 +57,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing=OnRep_DamageReduction)
 	FGameplayAttributeData DamageReduction;
 	ATTRIBUTE_ACCESSORS(UImpAttributeSet, DamageReduction);
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing=OnRep_Mana)
-	FGameplayAttributeData Mana;
-	ATTRIBUTE_ACCESSORS(UImpAttributeSet, Mana);
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing=OnRep_MaxMana)
-	FGameplayAttributeData MaxMana;
-	ATTRIBUTE_ACCESSORS(UImpAttributeSet, MaxMana);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing=OnRep_CritChance)
+	FGameplayAttributeData CritChance;
+	ATTRIBUTE_ACCESSORS(UImpAttributeSet, CritChance);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing=OnRep_CritDamage)
+	FGameplayAttributeData CritDamage;
+	ATTRIBUTE_ACCESSORS(UImpAttributeSet, CritDamage);
 	
 	UPROPERTY()
 	FGameplayAttributeData IncomingHealthDamage;
@@ -77,6 +85,12 @@ private:
 	
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
+	
+	UFUNCTION()
+	void OnRep_Mana(const FGameplayAttributeData& OldMana);
+	
+	UFUNCTION()
+	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana);
 
 	UFUNCTION()
 	void OnRep_Shield(const FGameplayAttributeData& OldShield);
@@ -88,9 +102,8 @@ private:
 	void OnRep_DamageReduction(const FGameplayAttributeData& OldDamageReduction);
 	
 	UFUNCTION()
-	void OnRep_Mana(const FGameplayAttributeData& OldMana);
+	void OnRep_CritChance(const FGameplayAttributeData& OldCritChance);
 	
 	UFUNCTION()
-	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana);
-
+	void OnRep_CritDamage(const FGameplayAttributeData& OldCritDamage);
 };

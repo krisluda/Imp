@@ -2,11 +2,14 @@
 
 #include "ExecCalc_Damage.h"
 #include "ImpGameplayTags.h"
+#include "ImpAbilityTypes.h"
 #include "ImpAttributeSet.h"
 
 struct ImpDamageStatics {
     
     // Source Captures
+    DECLARE_ATTRIBUTE_CAPTUREDEF(CritChance);
+    DECLARE_ATTRIBUTE_CAPTUREDEF(CritDamage);
 
     // Target Captures
     DECLARE_ATTRIBUTE_CAPTUREDEF(IncomingHealthDamage);
@@ -16,6 +19,8 @@ struct ImpDamageStatics {
 
     ImpDamageStatics() {
         // Source Defines
+        DEFINE_ATTRIBUTE_CAPTUREDEF(UImpAttributeSet, CritChance, Source, false);
+        DEFINE_ATTRIBUTE_CAPTUREDEF(UImpAttributeSet, CritDamage, Source, false);
 
         // Target Defines
         DEFINE_ATTRIBUTE_CAPTUREDEF(UImpAttributeSet, IncomingHealthDamage, Target, false);
@@ -32,6 +37,8 @@ static const ImpDamageStatics& DamageStatics() {
 
 UExecCalc_Damage::UExecCalc_Damage() {
     // Source Captures
+    RelevantAttributesToCapture.Add(DamageStatics().CritChanceDef);
+    RelevantAttributesToCapture.Add(DamageStatics().CritDamageDef);
 
     // Target Captures
     RelevantAttributesToCapture.Add(DamageStatics().IncomingHealthDamageDef);
@@ -43,16 +50,27 @@ UExecCalc_Damage::UExecCalc_Damage() {
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const {
     const FGameplayEffectSpec& EffectSpec = ExecutionParams.GetOwningSpec();
 
-    const FGameplayTagContainer* SourceTags = EffectSpec.CapturedSourceTags.GetAggregatedTags();
-    const FGameplayTagContainer* TargetTags = EffectSpec.CapturedTargetTags.GetAggregatedTags();
-
     FAggregatorEvaluateParameters EvalParams;
-    EvalParams.TargetTags = TargetTags;
-    EvalParams.SourceTags = SourceTags;
+    EvalParams.TargetTags = EffectSpec.CapturedTargetTags.GetAggregatedTags();
+    EvalParams.SourceTags = EffectSpec.CapturedSourceTags.GetAggregatedTags();
+
+    // Cast the EffectContext to an ImpGameplayEffectContext using the static cast function (from Lyra).
+    const FGameplayEffectContextHandle EffectContextHandle = EffectSpec.GetContext();
+    FImpGameplayEffectContext* ImpContext = FImpGameplayEffectContext::GetEffectContext(EffectContextHandle);
+
 
     // Get raw damage value
     float Damage = EffectSpec.GetSetByCallerMagnitude(ImpGameplayTags::Combat::Data_Damage);
     Damage = FMath::Max<float>(Damage, 0.f);
+
+    //Source captures
+    float CritChance = 0.f;
+    ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CritChanceDef, EvalParams, CritChance);
+    CritChance = FMath::Max<float>(CritChance, 0.f);
+
+    float CritDamage = 0.f;
+    ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CritDamageDef, EvalParams, CritDamage);
+    CritDamage = FMath::Max<float>(CritDamage, 0.f);
 
     //Target captures
     float Shield = 0.f;
@@ -63,10 +81,16 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
     ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DamageReductionDef, EvalParams, DamageReduction);
     DamageReduction = FMath::Max<float>(DamageReduction, 0.f);
 
+    //Begin calculation
+
+    const bool bCriticalHit = FMath::RandRange(0, 100) < CritChance;
+    Damage = bCriticalHit ? Damage += (CritDamage * 0.5f) : Damage; //Rewrite this. It now gives a damage bonus of half of our critdamage. Why?
+    ImpContext->SetIsCriticalHit(bCriticalHit);
+
     float OutShield = 0.f;
 
     if (Damage > 0.f && Shield > 0.f) {
-        //Doing the following, means damage reduction only applies IF we have a shield amount. This has to change later to separate their roles.
+        //Doing the following means damage reduction only applies IF we have a shield amount. This has to change later to separate their roles.
         Damage *= (100 - DamageReduction) / 100;
         OutShield = Shield - Damage;
 

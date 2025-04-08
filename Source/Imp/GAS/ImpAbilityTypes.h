@@ -3,11 +3,58 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "ImpAbilityTypes.generated.h"
 
 class AProjectileBase;
 class UGameplayEffect;
 class UAbilitySystemComponent;
+
+USTRUCT()
+struct FImpGameplayEffectContext : public FGameplayEffectContext {
+//This child of FGameplayEffectContext is passed around at the right spots to be able to use it at the right times. Pack extra data into one of these, but required a bit of effort.
+	GENERATED_BODY();
+
+	bool IsCriticalHit() const { return bCriticalHit; }	
+
+	void SetIsCriticalHit(const bool InCriticalHit) { bCriticalHit = InCriticalHit; }
+
+	//We can't cast to a child struct, so this specific function lets us get this (i.e. in the Exec_Calc)
+	static IMP_API
+	FImpGameplayEffectContext* GetEffectContext(FGameplayEffectContextHandle Handle);
+
+	virtual UScriptStruct* GetScriptStruct() const override {
+		return StaticStruct();
+	}
+	
+	virtual FImpGameplayEffectContext* Duplicate() const override {
+		FImpGameplayEffectContext* NewContext = new FImpGameplayEffectContext();
+		*NewContext = *this;
+
+		if (GetHitResult()) {
+			NewContext->AddHitResult(*GetHitResult(), true);
+		}
+
+		return NewContext;
+	}
+
+	virtual bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess) override;
+
+//ok
+private:
+
+	UPROPERTY()
+	bool bCriticalHit = false;
+
+};
+
+template<>
+struct TStructOpsTypeTraits<FImpGameplayEffectContext> : TStructOpsTypeTraitsBase2<FImpGameplayEffectContext> {
+	enum {
+		WithNetSerializer = true,
+		WithCopy = true,
+	};
+};
 
 USTRUCT()
 struct FProjectileParams {
