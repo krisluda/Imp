@@ -22,22 +22,12 @@ class IMP_API AImpPlayerController : public APlayerController, public IAbilitySy
     GENERATED_BODY()
         
 public:
+    
     AImpPlayerController();
-    
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+    virtual void SetupInputComponent() override;
+    
     virtual void BeginPlay() override;
-    
-    //This might be removed, not sure. Uhr gets rid of it at some point, but i believe it is asked for i BP. It actually needs an override to compile
-    virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-    //And this is the specific one that is used by Uhr, in the Ability Input-stuff.
-    UImpAbilitySystemComponent* GetImpAbilitySystemComponent();
-
-    UPROPERTY()
-    TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComp;
-
-
-/* INVENTORY SECTION */
 
     /* Implement InventoryInterface */
     virtual UInventoryComponent* GetInventoryComponent_Implementation() override;
@@ -45,11 +35,34 @@ public:
     /* Implement ImpAbilitySystemInterface */
     virtual void SetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag, int32 AbilityLevel) override;
     
-    UInventoryWidgetController* GetInventoryWidgetController();
+    //This seems to be mandatory, but might be removed, not sure. Uhr seemd to get rid of it at some point, but later it is actual in the top public section. It actually needs an override to compile.
+    virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+    //And this is the specific one that is used by Uhr, in the Ability Input-stuff.
+    UImpAbilitySystemComponent* GetImpAbilitySystemComponent();
     
+    UInventoryWidgetController* GetInventoryWidgetController();
+
     UFUNCTION(BlueprintCallable)
     void CreateInventoryWidget();
-    
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+
+
+protected:
+
+    void AbilityInputPressed(FGameplayTag InputTag);
+    void AbilityInputReleased(FGameplayTag InputTag);
+
+private:
+
+    UPROPERTY()
+    TObjectPtr<UImpAbilitySystemComponent> ImpAbilitySystemComp;
+
+    UPROPERTY(EditDefaultsOnly, Category="Custom Values|Input")
+    TObjectPtr<UImpInputConfig> ImpInputConfig;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true), Replicated)
     TObjectPtr<UInventoryComponent> InventoryComponent;
     
@@ -65,17 +78,8 @@ public:
     UPROPERTY(EditDefaultsOnly, Category="Custom Values|Widgets")
     TSubclassOf<UImpWidget> InventoryWidgetClass;
 
-/* INVENTORY SECTION END */
-    
-
-/* INPUT SECTION */
-    virtual void SetupInputComponent() override;
-
-    UPROPERTY(EditDefaultsOnly, Category="Custom Values|Input")
-    TObjectPtr<UImpInputConfig> ImpInputConfig;
-
-    void AbilityInputPressed(FGameplayTag InputTag);
-    void AbilityInputReleased(FGameplayTag InputTag);
+//This was public but i think it can be private. Also we might just fuck private.
+public:
 
 //Old movement shit below, lets see if it stays
     void Move(const FInputActionValue& Value);
@@ -95,8 +99,4 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     UInputAction* JumpAction;
 //Old movement shit above
-
-/* INPUT SECTION END */
-
-
 };

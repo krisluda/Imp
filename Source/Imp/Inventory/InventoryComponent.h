@@ -6,47 +6,77 @@
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
 #include "ItemTypes.h"
+#include "Net/Serialization/FastArraySerializer.h"
 #include "InventoryComponent.generated.h"
 
 class UItemTypesToTables;
 
-USTRUCT()
-struct FPackagedInventory {
+USTRUCT(BlueprintType)
+struct FImpInventoryEntry : public FFastArraySerializerItem {
 	GENERATED_BODY()
 
-	virtual ~FPackagedInventory() = default;
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag ItemTag = FGameplayTag();
 
-	UPROPERTY()
-	TArray<FGameplayTag> ItemTags;
-
-	UPROPERTY()
-	TArray<int32> ItemQuantities;
-
-	virtual bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess);
+	UPROPERTY(BlueprintReadOnly)
+	int32 Quantity = 0;
 };
+
+USTRUCT()
+struct FImpInventoryList : public FFastArraySerializer {
+	GENERATED_BODY()
+
+	FImpInventoryList() : 
+	OwnerComponent(nullptr) 
+	{}
+
+	FImpInventoryList(UActorComponent* InComponent) :
+	OwnerComponent(InComponent)
+	{}
+
+	void AddItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
+	void RemoveItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
+	bool HasEnough(const FGameplayTag& ItemTag, int32 NumItems = 1);
+
+	// FFastArraySerializer Contract "Three... Two of them are very useful, one I don't know bc can't ever get it to work"
+	// Apparently we dont need to do anything else for the FastArraySerializer, we just need to add this specific functionality.
+	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms) {
+		return FastArrayDeltaSerialize<FImpInventoryEntry, FImpInventoryList>(Entries, DeltaParms, *this);
+	}
+
+
+private:
+
+	friend class UInventoryComponent;
+
+	UPROPERTY()
+	TArray<FImpInventoryEntry> Entries;
+
+	UPROPERTY(NotReplicated)
+	TObjectPtr<UActorComponent> OwnerComponent;
+};
+
 template<>
-struct TStructOpsTypeTraits<FPackagedInventory> : TStructOpsTypeTraitsBase2<FPackagedInventory> {
-	enum { 
-		WithNetSerializer = true
+struct TStructOpsTypeTraits<FImpInventoryList> : TStructOpsTypeTraitsBase2<FImpInventoryList> {
+	enum {
+		WithNetDeltaSerializer = true
 	};
 };
-//The above shenanigans is apparently a very specific method that tells the engine that the struct above
-//has a NetSerialize-function or whatever. Uhr describes it as a worthwhile optimization, because the inventory replication
-//ends up sending a lot of info over the net to stay updated.
-
-/* This declaration must happen directly after the struct for FPackagedInventory*/
-DECLARE_MULTICAST_DELEGATE_OneParam(FInventoryPackagedSignature, const FPackagedInventory& /*InventoryContents*/);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class IMP_API UInventoryComponent : public UActorComponent {
 	GENERATED_BODY()
 
 public:	
+
+	UPROPERTY(Replicated)
+	FImpInventoryList InventoryList;
+
 	UInventoryComponent();
-	
-	FInventoryPackagedSignature InventoryPackagedDelegate;
-	
-	bool bOwnerLocallyControlled = false; //to prevent others from getting the inventory of others?
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -59,13 +89,8 @@ public:
 	UFUNCTION(BlueprintPure)
 	FMasterItemDefinition GetItemDefinitionByTag(const FGameplayTag& ItemTag) const;
 
-	TMap<FGameplayTag, int32> GetInventoryTagMap();
-
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TMap<FGameplayTag, int32> InventoryTagMap;
-
-	UPROPERTY(ReplicatedUsing=OnRep_CachedInventory)
-	FPackagedInventory CachedInventory;
+//still wondering why private
+private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UItemTypesToTables> InventoryDefinitions;
@@ -74,13 +99,6 @@ public:
 	void ServerAddItem(const FGameplayTag& ItemTag, int32 NumItems);
 
 	UFUNCTION(Server, Reliable)
-	void ServerUseItem(const FGameplayTag& ItemTag, int32 NumItems);
-
-	void PackageInventory(FPackagedInventory& OutInventory);
-	void ReconstructInventoryMap(const FPackagedInventory& Inventory);
-
-	UFUNCTION()
-	void OnRep_CachedInventory();
-
-		
+	void ServerUseItem(const FGameplayTag& ItemTag, int32 NumItems);	
+	
 };

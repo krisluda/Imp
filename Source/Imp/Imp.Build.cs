@@ -19,7 +19,9 @@ public class Imp : ModuleRules {
 			"Niagara", 
 			"GameplayAbilities", 
 			"GameplayTags", 
-			"GameplayTasks" });
+			"GameplayTasks", 
+			"NetCore"
+			});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

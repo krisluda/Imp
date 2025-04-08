@@ -40,10 +40,6 @@ void AImpPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> 
 void AImpPlayerController::BeginPlay() {
     Super::BeginPlay();
 
-    if (IsValid(InventoryComponent)) {
-        InventoryComponent->bOwnerLocallyControlled = IsLocalController();
-    }
-
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())) {
         Subsystem->AddMappingContext(InputMapping, 0);
     }
@@ -56,6 +52,8 @@ UAbilitySystemComponent* AImpPlayerController::GetAbilitySystemComponent() const
     return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
 }
 
+// This is both sets ImpAbilitySystemComp from the PlayerState, and gets it in this class. 
+// Use this instead of the ImpAbilitySystemComp-variable directly when checking IsValid, because then it will fetch and set it if it isn't already.
 UImpAbilitySystemComponent* AImpPlayerController::GetImpAbilitySystemComponent() {
     if (!IsValid(ImpAbilitySystemComp)) {
         if (const AImpPlayerState* ImpPlayerState = GetPlayerState<AImpPlayerState>()) {
@@ -72,7 +70,7 @@ UInventoryComponent* AImpPlayerController::GetInventoryComponent_Implementation(
 }
 
 void AImpPlayerController::SetDynamicProjectile_Implementation(const FGameplayTag &ProjectileTag, int32 AbilityLevel) {
-    if (IsValid(ImpAbilitySystemComp)) {
+    if (IsValid(GetImpAbilitySystemComponent())) {
         ImpAbilitySystemComp->SetDynamicProjectile(ProjectileTag, AbilityLevel);
     } else {
         IMP_DEBUGMSG(FColor::Red, "AImpPlayerController::SetDynamicProjectile_Implementation: ImpAbilitySystem not valid. It seems like it's too early.");
@@ -120,12 +118,18 @@ void AImpPlayerController::SetupInputComponent()
 void AImpPlayerController::AbilityInputPressed(FGameplayTag InputTag) {
     if (IsValid(GetImpAbilitySystemComponent())) {
         ImpAbilitySystemComp->AbilityInputPressed(InputTag);
+    } else {
+        IMP_DEBUGMSG(FColor::Red, "AImpPlayerController::AbilityInputPressed: ImpAbilitySystem not valid. It seems like it's too early.");
+        IMP_LOG("AImpPlayerController::AbilityInputPressed: ImpAbilitySystem not valid. It seems like it's too early.");
     }
 }
 
 void AImpPlayerController::AbilityInputReleased(FGameplayTag InputTag) {
-    if (IsValid(ImpAbilitySystemComp)) {
+    if (IsValid(GetImpAbilitySystemComponent())) {
         ImpAbilitySystemComp->AbilityInputReleased(InputTag);
+    }else {
+        IMP_DEBUGMSG(FColor::Red, "AImpPlayerController::AbilityInputReleased: ImpAbilitySystem not valid. It seems like it's too early.");
+        IMP_LOG("AImpPlayerController::AbilityInputReleased: ImpAbilitySystem not valid. It seems like it's too early.");
     }
 }
 
