@@ -67,18 +67,13 @@ public:
 	ATTRIBUTE_ACCESSORS(UImpAttributeSet, CritDamage);
 	
 	UPROPERTY()
-	FGameplayAttributeData IncomingHealthDamage;
-	ATTRIBUTE_ACCESSORS(UImpAttributeSet, IncomingHealthDamage);
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UImpAttributeSet, IncomingDamage);
 	
-	UPROPERTY()
-	FGameplayAttributeData IncomingShieldDamage;
-	ATTRIBUTE_ACCESSORS(UImpAttributeSet, IncomingShieldDamage);
-
 //Really?
 private: 
 
-	void HandleIncomingHealthDamage(const FGameplayEffectModCallbackData& Data);
-	void HandleIncomingShieldDamage(const FGameplayEffectModCallbackData& Data);
+	void HandleIncomingDamage(const FGameplayEffectModCallbackData& Data);
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth);

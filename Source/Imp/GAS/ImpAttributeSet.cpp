@@ -32,39 +32,27 @@ void UImpAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
         SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
     }
 
-    if (Data.EvaluatedData.Attribute == GetIncomingHealthDamageAttribute()) {
-        HandleIncomingHealthDamage(Data);
-    }
-
-    if (Data.EvaluatedData.Attribute == GetIncomingShieldDamageAttribute()) {
-        HandleIncomingShieldDamage(Data);
+    if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute()) {
+        HandleIncomingDamage(Data);
     }
 }
 
-void UImpAttributeSet::HandleIncomingHealthDamage(const FGameplayEffectModCallbackData &Data) {
-    const float LocalDamage = GetIncomingHealthDamage();
-    SetIncomingHealthDamage(0.f);
-
-    FGameplayEffectContextHandle ContextHandle = Data.EffectSpec.GetContext();
-    FImpGameplayEffectContext* ImpContext = FImpGameplayEffectContext::GetEffectContext(ContextHandle);
-    FColor DebugColor = ImpContext->IsCriticalHit() ? FColor::Red : FColor::Green;
-
-    IMP_DEBUGMSG(DebugColor, "UImpAttributeSet::HandleIncomingHealthDamage: Damage dealt %d", FMath::TruncToInt(LocalDamage));;
+void UImpAttributeSet::HandleIncomingDamage(const FGameplayEffectModCallbackData& Data) {
+    const float LocalDamage = GetIncomingDamage();
+    SetIncomingDamage(0.f);
     
-    SetHealth(FMath::Clamp(GetHealth() - LocalDamage, 0.f, GetMaxHealth()));
-}
+    const float LocalShield = GetShield();
+    float OutShield = 0.f;
 
-void UImpAttributeSet::HandleIncomingShieldDamage(const FGameplayEffectModCallbackData & Data) {
-    const float LocalShieldDamage = GetIncomingShieldDamage();
-    SetIncomingShieldDamage(0.f);
+    if (LocalDamage > 0.f && LocalShield > 0.f) {
+        OutShield = LocalShield - LocalDamage;
+        SetShield(FMath::Clamp(OutShield, 0.f, GetMaxShield()));
+    }
 
-    FGameplayEffectContextHandle ContextHandle = Data.EffectSpec.GetContext();
-    FImpGameplayEffectContext* ImpContext = FImpGameplayEffectContext::GetEffectContext(ContextHandle);
-    FColor DebugColor = ImpContext->IsCriticalHit() ? FColor::Red : FColor::Green;
-
-    IMP_DEBUGMSG(DebugColor, "UImpAttributeSet::HandleIncomingShieldDamage: Damage dealt %d", FMath::TruncToInt(LocalShieldDamage));;
-
-    SetShield(FMath::Clamp(GetShield() - LocalShieldDamage, 0.f, GetMaxShield()));
+    if (LocalDamage > 0.f && OutShield <= 0.f) {
+        const float RemainderDamage = fabs(LocalShield - LocalDamage);
+        SetHealth(FMath::Clamp(GetHealth() - RemainderDamage, 0.f, GetMaxHealth()));
+    }
 }
 
 void UImpAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) {
