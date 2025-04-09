@@ -22,6 +22,8 @@ struct FImpInventoryEntry : public FFastArraySerializerItem {
 	int32 Quantity = 0;
 };
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FDirtyInventoryItemSignature, const FImpInventoryEntry& /* Dirty Item */);
+
 USTRUCT()
 struct FImpInventoryList : public FFastArraySerializer {
 	GENERATED_BODY()
@@ -38,7 +40,7 @@ struct FImpInventoryList : public FFastArraySerializer {
 	void RemoveItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
 	bool HasEnough(const FGameplayTag& ItemTag, int32 NumItems = 1);
 
-	// FFastArraySerializer Contract "Three... Two of them are very useful, one I don't know bc can't ever get it to work"
+	// FFastArraySerializer Contract "Three... Two of them are very useful, one (PreRep) I don't know bc can't ever get it to work"
 	// Apparently we dont need to do anything else for the FastArraySerializer, we just need to add this specific functionality.
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
@@ -47,6 +49,8 @@ struct FImpInventoryList : public FFastArraySerializer {
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms) {
 		return FastArrayDeltaSerialize<FImpInventoryEntry, FImpInventoryList>(Entries, DeltaParms, *this);
 	}
+
+	FDirtyInventoryItemSignature DirtyItemDelegate;
 
 
 private:
@@ -88,6 +92,8 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	FMasterItemDefinition GetItemDefinitionByTag(const FGameplayTag& ItemTag) const;
+
+	TArray<FImpInventoryEntry> GetInventoryEntries();
 
 //still wondering why private
 private:

@@ -8,7 +8,6 @@
 
 struct FMasterItemDefinition;
 class UInventoryComponent;
-struct FPackagedInventory;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemSignature, const FMasterItemDefinition&, Item);
 

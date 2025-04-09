@@ -27,3 +27,34 @@ A struct containing all the necessary info for a damage effect to work when and 
 # ImpAbilitySystemGlobals
 Subclasses and overrides FGameplayEffectContext* AllocGameplayEffectContext() to return new FImpGameplayEffectContext(). 
 Coupled with setting the AbilitySystemGlobalsClassName="/Script/Imp.ImpAbilitySystemGlobals" in DefaultGame.ini, this makes our globals-class the globals class, and then allocates our ImpGameplayEffectContext as the GameplayEffectContext.
+
+# InventoryComponent
+
+## FInventoryEntry
+A FastArraySerializerItem struct for each inventory item
+
+Properties:
+- Tags
+- Quantity
+
+## FInventoryList
+A FastArraySerializer struct for the whole inventory. Holds an array of items and an owner (which is the InventoryComponent that creates it, and all this is done in the inventory component.)
+
+Functions:
+- Add
+- Remove
+- Has Enough (to use)
+
+FAS-boilerplate:
+- PreRepRemove (Uhr doesnt understand how it works)
+- PostRepAdd
+- PostRepChange
+
+NetDeltaSerialize:
+- Serializes, but just the change from t1 to t2.
+- Uses the same template-shenanigans for netserialization, but we dont need any overrides or adds.
+
+## InventoryComponent itself
+Has master functions for adding (removing -1), using, getting item by tag, getting all the entries (in the array in the FAS-struct), and server-versions of add and use.
+
+# 

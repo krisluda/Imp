@@ -9,33 +9,47 @@
 #include "Log.h"
 #include "Net/UnrealNetwork.h"
 
+
+
 void FImpInventoryList::AddItem(const FGameplayTag &ItemTag, int32 NumItems) {
 	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt) {
 		FImpInventoryEntry& Entry = *EntryIt;
 
 		if (Entry.ItemTag.MatchesTagExact(ItemTag)) {
 			Entry.Quantity += NumItems;
-
 			MarkItemDirty(Entry);
+
+			if (OwnerComponent->GetOwner()->HasAuthority()) {
+				DirtyItemDelegate.Broadcast(Entry); 
+			}
+			
 			return;
 		}
 	}
-
+	
 	FImpInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.ItemTag = ItemTag;
 	NewEntry.Quantity = NumItems;
+	
+	MarkItemDirty(NewEntry); //Could or should this be above the broadcast both for new and non-new items?
 
-	MarkItemDirty(NewEntry);
+	if (OwnerComponent->GetOwner()->HasAuthority()) {
+		DirtyItemDelegate.Broadcast(NewEntry); 
+	}	
 }
 
 void FImpInventoryList::RemoveItem(const FGameplayTag &ItemTag, int32 NumItems) {
 	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt) {
 		FImpInventoryEntry& Entry = *EntryIt;
-
+		
 		if (Entry.ItemTag.MatchesTagExact(ItemTag)) {
 			Entry.Quantity -= NumItems;
-
+			
 			MarkItemDirty(Entry);
+			
+			if (OwnerComponent->GetOwner()->HasAuthority()) {
+				DirtyItemDelegate.Broadcast(Entry); 
+			}
 		}
 	}
 }
@@ -55,15 +69,23 @@ bool FImpInventoryList::HasEnough(const FGameplayTag &ItemTag, int32 NumItems) {
 }
 
 void FImpInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize) {
-
+	// Uhr doesn't know what this is reliably good for.
 }
 
 void FImpInventoryList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize) {
+	for (const int32 Index : AddedIndices) {
+		FImpInventoryEntry& Entry = Entries[Index];
 
+		DirtyItemDelegate.Broadcast(Entry);
+	}
 }
 
 void FImpInventoryList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize) {
-	
+	for (const int32 Index : ChangedIndices) {
+		FImpInventoryEntry& Entry = Entries[Index];
+
+		DirtyItemDelegate.Broadcast(Entry);
+	}
 }
 
 UInventoryComponent::UInventoryComponent() :
@@ -141,6 +163,10 @@ FMasterItemDefinition UInventoryComponent::GetItemDefinitionByTag(const FGamepla
 	}
 
 	return FMasterItemDefinition();
+}
+
+TArray<FImpInventoryEntry> UInventoryComponent::GetInventoryEntries() {
+	return InventoryList.Entries;
 }
 
 
